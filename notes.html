@@ -271,14 +271,14 @@ async function gen() {
   var systemPrompt = "你是专业的澳洲大学留学生课堂笔记整理助手。根据提供的材料整理出结构化中文学习笔记。\n\n必须严格按以下JSON格式输出，只输出JSON，不要任何其他文字：\n{\"overview\":\"2-3句概述\",\"concepts\":[{\"term\":\"英文\",\"zh\":\"中文\",\"note\":\"说明\"}],\"structure\":\"结构分点\",\"keypoints\":[\"重点1\"],\"details\":[\"详细点1\"],\"tut_points\":[\"讨论点1\"],\"exam\":[\"考点1\"],\"exam_tips\":\"建议\",\"unclear\":[\"待理解点1\"]}";
   var userPrompt = "课程：" + smap[subj] + (cn ? "（" + cn + "）" : "") + "\n已上传材料：" + matCount + " 项\n\n" + parts.join("\n\n---\n\n");
   try {
-    var resp = await fetch("https://api.anthropic.com/v1/messages", {
+    var resp = await fetch("https://echotranslate-api.vercel.app/api/notes", {
       method: "POST",
       headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system:systemPrompt,messages:[{role:"user",content:userPrompt}]})
+      body: JSON.stringify({materials:{lec:gv("lec"),tut:gv("tut"),ppt:gv("ppt"),hw:gv("hw")},subject:subj,courseCode:cn,password:"12345"})
     });
     var data = await resp.json();
-    var raw = (data.content||[]).map(function(c){return c.text||"";}).join("").trim().replace(/^```json\s*/,"").replace(/\s*```$/,"").trim();
-    rend(JSON.parse(raw), matCount, hasHw, hasPpt);
+    if (!resp.ok) throw new Error(data.error || "API error");
+    rend(data.notes, data.matCount, hasHw, hasPpt);
   } catch(e) {
     document.getElementById("cards").innerHTML = '<div class="card"><div class="ch ch-yellow"><span class="ch-i">⚠️</span><div class="ch-t">整理失败</div></div><div class="cb"><p>'+esc(e.message)+'</p></div></div>';
   }
