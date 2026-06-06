@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>留学帮 — UNSW 留学生工具箱</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#f7f8fa;--white:#fff;--border:#e8eaed;--text:#1a1a2e;--muted:#6b7280;--light:#9ca3af;--blue:#2563eb;--blue-light:#eff6ff;--blue-border:#bfdbfe;--green:#059669;--green-light:#ecfdf5;--radius:12px;--shadow:0 1px 3px rgba(0,0,0,.08);--shadow-md:0 4px 16px rgba(0,0,0,.08);}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans SC',sans-serif;font-size:15px;line-height:1.6;}
+nav{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.nav-inner{max-width:1100px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-size:18px;font-weight:700;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:8px;}
+.logo-dot{width:8px;height:8px;border-radius:50%;background:var(--blue);}
+.nav-links{display:flex;align-items:center;gap:28px;}
+.nav-links a{font-size:14px;color:var(--muted);text-decoration:none;}
+.nav-links a:hover{color:var(--text);}
+.nav-btn{background:var(--blue);color:#fff!important;padding:7px 16px;border-radius:8px;font-size:13px!important;font-weight:500!important;}
+main{max-width:1100px;margin:0 auto;padding:48px 24px 80px;}
+.hero{text-align:center;margin-bottom:56px;}
+.hero-tag{display:inline-block;background:var(--blue-light);color:var(--blue);border:1px solid var(--blue-border);border-radius:20px;font-size:12px;font-weight:500;padding:4px 12px;margin-bottom:20px;}
+.hero h1{font-size:clamp(28px,4vw,44px);font-weight:700;line-height:1.2;color:var(--text);margin-bottom:14px;letter-spacing:-.5px;}
+.hero h1 span{color:var(--blue);}
+.hero p{font-size:16px;color:var(--muted);max-width:480px;margin:0 auto 32px;font-weight:300;}
+.hero-stats{display:flex;justify-content:center;gap:40px;}
+.stat-num{font-size:22px;font-weight:700;color:var(--text);}
+.stat-label{font-size:12px;color:var(--light);}
+.section{margin-bottom:48px;}
+.section-head{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+.section-head h2{font-size:16px;font-weight:600;}
+.section-badge{font-size:11px;font-weight:500;padding:2px 8px;border-radius:4px;}
+.badge-live{background:#fef3c7;color:#92400e;border:1px solid #fde68a;}
+.badge-soon{background:#f3f4f6;color:#9ca3af;border:1px solid #e5e7eb;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:22px;text-decoration:none;color:inherit;display:block;transition:all .15s;}
+.card:hover{box-shadow:var(--shadow-md);border-color:#d1d5db;transform:translateY(-1px);}
+.card.disabled{cursor:default;opacity:.6;}
+.card.disabled:hover{box-shadow:none;border-color:var(--border);transform:none;}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+.card-icon{font-size:24px;}
+.card-tag{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:4px;}
+.tag-free{background:var(--green-light);color:var(--green);border:1px solid #a7f3d0;}
+.tag-soon{background:#f3f4f6;color:#9ca3af;border:1px solid #e5e7eb;}
+.card h3{font-size:15px;font-weight:600;margin-bottom:5px;}
+.card p{font-size:13px;color:var(--muted);line-height:1.5;}
+.card-footer{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-action{font-size:12px;font-weight:500;color:var(--blue);}
+.card.disabled .card-action{color:var(--light);}
+.banner{background:var(--blue-light);border:1px solid var(--blue-border);border-radius:var(--radius);padding:20px 24px;display:flex;align-items:center;gap:16px;margin-bottom:40px;}
+.banner-icon{font-size:20px;flex-shrink:0;}
+.banner-text strong{font-size:14px;font-weight:600;color:var(--blue);display:block;margin-bottom:2px;}
+.banner-text span{font-size:13px;color:#3b82f6;}
+.banner-btn{background:var(--blue);color:#fff;font-size:13px;font-weight:500;padding:8px 16px;border-radius:8px;text-decoration:none;white-space:nowrap;flex-shrink:0;}
+footer{border-top:1px solid var(--border);padding:28px 24px;text-align:center;}
+footer p{font-size:12px;color:var(--light);}
+@media(max-width:640px){.hero-stats{gap:24px;}.nav-links{display:none;}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="/"><div class="logo-dot"></div>留学帮</a>
+    <div class="nav-links">
+      <a href="#tools">工具</a>
+      <a href="#coming">即将上线</a>
+      <a href="translate.html" class="nav-btn">立即翻译 →</a>
+    </div>
+  </div>
+</nav>
+<main>
+  <div class="hero">
+    <div class="hero-tag">专为 UNSW 中国留学生</div>
+    <h1>留学路上<span>少走弯路</span></h1>
+    <p>把留学生最常用的工具放在一起，简单直接，帮你搞定课堂、生活、学业。</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">1</div><div class="stat-label">个工具上线</div></div>
+      <div class="stat"><div class="stat-num">5+</div><div class="stat-label">个功能在做</div></div>
+      <div class="stat"><div class="stat-num">100%</div><div class="stat-label">免费起步</div></div>
+    </div>
+  </div>
+  <div class="banner">
+    <div class="banner-icon">🎉</div>
+    <div class="banner-text">
+      <strong>EchoTranslate 正式上线</strong>
+      <span>EchoVideo 字幕翻译 + Tutorial 语音同传，点书签立即用</span>
+    </div>
+    <a href="translate.html" class="banner-btn">立即使用</a>
+  </div>
+  <div class="section" id="tools">
+    <div class="section-head"><h2>📚 课堂工具</h2><span class="section-badge badge-live">已上线</span></div>
+    <div class="grid">
+      <a href="translate.html" class="card">
+        <div class="card-head"><div class="card-icon">🌐</div><span class="card-tag tag-free">免费</span></div>
+        <h3>EchoTranslate 实时翻译</h3>
+        <p>EchoVideo 录播字幕自动翻译，Tutorial 现场语音同传，一个书签搞定。</p>
+        <div class="card-footer"><span class="card-action">获取书签 →</span><span style="font-size:12px;color:#d1d5db;">Lec + Tut</span></div>
+      </a>
+    </div>
+  </div>
+  <div class="section" id="coming">
+    <div class="section-head"><h2>🚧 即将上线</h2><span class="section-badge badge-soon">开发中</span></div>
+    <div class="grid">
+      <div class="card disabled"><div class="card-head"><div class="card-icon">📝</div><span class="card-tag tag-soon">开发中</span></div><h3>课堂笔记整理</h3><p>上传录音或字幕，AI 自动生成中文结构化笔记，重点标注。</p><div class="card-footer"><span class="card-action">即将上线</span></div></div>
+      <div class="card disabled"><div class="card-head"><div class="card-icon">✍️</div><span class="card-tag tag-soon">开发中</span></div><h3>Essay 润色</h3><p>语法纠错 + 学术表达优化，不是代写，是让你的作业更地道。</p><div class="card-footer"><span class="card-action">即将上线</span></div></div>
+      <div class="card disabled"><div class="card-head"><div class="card-icon">🏠</div><span class="card-tag tag-soon">开发中</span></div><h3>租房助手</h3><p>合同条款中文解读，Gumtree/Domain 房源聚合，避坑指南。</p><div class="card-footer"><span class="card-action">即将上线</span></div></div>
+      <div class="card disabled"><div class="card-head"><div class="card-icon">💰</div><span class="card-tag tag-soon">开发中</span></div><h3>报税 & 退税指南</h3><p>Tax File Number 申请、年度报税流程、退税计算，中文全程。</p><div class="card-footer"><span class="card-action">即将上线</span></div></div>
+      <div class="card disabled"><div class="card-head"><div class="card-icon">📅</div><span class="card-tag tag-soon">开发中</span></div><h3>签证续签提醒</h3><p>输入签证到期日，自动提醒续签节点，绝不错过 deadline。</p><div class="card-footer"><span class="card-action">即将上线</span></div></div>
+      <div class="card disabled"><div class="card-head"><div class="card-icon">📖</div><span class="card-tag tag-soon">开发中</span></div><h3>往年题库</h3><p>UNSW 各科往年考题收录，AI 解析，考前冲刺必备。</p><div class="card-footer"><span class="card-action">即将上线</span></div></div>
+    </div>
+  </div>
+</main>
+<footer><p>留学帮 · 由 UNSW 学生制作 · 专为中国留学生设计</p></footer>
+</body>
+</html>
