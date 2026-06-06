@@ -21,6 +21,9 @@ h1{font-size:22px;font-weight:700;margin-bottom:6px;letter-spacing:-.3px;}
 .pr label{font-size:13px;color:var(--muted);white-space:nowrap;}
 .fi{border:1px solid var(--border);border-radius:7px;padding:7px 11px;font-size:13px;font-family:inherit;outline:none;background:var(--white);}
 .fi:focus{border-color:var(--blue);}
+#pw-status{font-size:12px;font-weight:600;}
+#pw-status.ok{color:var(--green);}
+#pw-status.bad{color:var(--red);}
 .ug{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;}
 @media(min-width:640px){.ug{grid-template-columns:repeat(4,1fr);}}
 .uc{background:var(--white);border:2px dashed var(--border);border-radius:var(--r);padding:16px 12px;text-align:center;cursor:pointer;transition:all .15s;position:relative;}
@@ -80,36 +83,70 @@ select{border:1px solid var(--border);border-radius:7px;padding:7px 10px;font-si
 .ch-yellow{background:var(--yellow-l);border-bottom-color:var(--yellow-b);}
 .ch-purple{background:var(--purple-l);border-bottom-color:var(--purple-b);}
 .ch-red{background:var(--red-l);border-bottom-color:var(--red-b);}
+.ch-gray{background:#f9fafb;border-bottom-color:var(--border);}
 .tm{display:inline-block;color:var(--blue);background:var(--blue-l);border:1px solid var(--blue-b);border-radius:3px;padding:0 5px;font-size:12px;margin:0 2px;}
 .et{display:inline-block;background:var(--red-l);color:var(--red);border:1px solid var(--red-b);border-radius:3px;padding:0 5px;font-size:12px;font-weight:600;margin:0 2px;}
 .wt{display:inline-block;background:var(--yellow-l);color:var(--yellow);border:1px solid var(--yellow-b);border-radius:3px;padding:0 5px;font-size:12px;margin:0 2px;}
+.gt{display:inline-block;background:var(--green-l);color:var(--green);border:1px solid var(--green-b);border-radius:3px;padding:0 5px;font-size:12px;font-weight:600;margin:0 2px;}
 .spin{width:34px;height:34px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 14px;}
 @keyframes sp{to{transform:rotate(360deg);}}
 .ld{text-align:center;padding:44px 24px;}
 .ld p{font-size:14px;color:var(--muted);}
 .ld small{font-size:12px;color:var(--light);display:block;margin-top:4px;}
+.qbadge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;}
+.qb-full{background:var(--green-l);color:var(--green);}
+.qb-good{background:var(--yellow-l);color:var(--yellow);}
+.qb-basic{background:#f3f4f6;color:var(--muted);}
 </style>
 </head>
 <body>
 <nav>
   <a class="logo" href="/"><div class="logo-dot"></div>留学帮</a>
-  <a class="nb" href="/"> ← 返回主页</a>
+  <a class="nb" href="/">← 返回主页</a>
 </nav>
 <div class="pg">
   <h1>📝 课堂笔记整理</h1>
   <p class="sub">上传的材料越多，笔记越完整。只有一样也没关系，一样能帮你整理出重点和考点。</p>
-  <div class="pr"><label>访问密码</label><input class="fi" id="pw" type="password" placeholder="输入密码..." style="max-width:200px" autocomplete="off"><span id="ps" style="font-size:12px;"></span></div>
+  <div class="pr">
+    <label>访问密码</label>
+    <input class="fi" id="pw" type="password" placeholder="输入密码..." style="max-width:200px" autocomplete="off" oninput="checkPw()">
+    <span id="pw-status"></span>
+  </div>
   <div class="ug">
-    <div class="uc" id="uc-lec" onclick="pick('lec')"><span class="ut t-opt" id="tl">&#x53EF;&#x9009;</span><div class="uc-i">🎦</div><div class="uc-n">Lec 字幕</div><div class="uc-d">EchoVideo字幕或录音</div><input type="file" id="f-lec" accept=".txt,.vtt,.srt" onchange="onF('lec',this)"></div>
-    <div class="uc" id="uc-tut" onclick="pick('tut')"><span class="ut t-opt" id="tt">&#x53EF;&#x9009;</span><div class="uc-i">🗣️</div><div class="uc-n">Tut 笔记</div><div class="uc-d">Tutorial记录或整理</div><input type="file" id="f-tut" accept=".txt,.vtt,.srt" onchange="onF('tut',this)"></div>
-    <div class="uc" id="uc-ppt" onclick="pick('ppt')"><span class="ut t-boost" id="tp">&#x52A0;&#x5206;&#x9879;</span><div class="uc-i">📊</div><div class="uc-n">PPT/PDF</div><div class="uc-d">课件，提取结构</div><input type="file" id="f-ppt" accept=".pdf,.txt" onchange="onF('ppt',this)"></div>
-    <div class="uc" id="uc-hw" onclick="pick('hw')"><span class="ut t-boost" id="th">&#x52A0;&#x5206;&#x9879;</span><div class="uc-i">📋</div><div class="uc-n">作业/题目</div><div class="uc-d">练习题，预测考点</div><input type="file" id="f-hw" accept=".txt" onchange="onF('hw',this)"></div>
+    <div class="uc" id="uc-lec" onclick="pick('lec')">
+      <span class="ut t-opt" id="tl">可选</span>
+      <div class="uc-i">🎦</div>
+      <div class="uc-n">Lec 字幕</div>
+      <div class="uc-d">EchoVideo字幕或录音</div>
+      <input type="file" id="f-lec" accept=".txt,.vtt,.srt" onchange="onF('lec',this)">
+    </div>
+    <div class="uc" id="uc-tut" onclick="pick('tut')">
+      <span class="ut t-opt" id="tt">可选</span>
+      <div class="uc-i">🗣️</div>
+      <div class="uc-n">Tut 笔记</div>
+      <div class="uc-d">Tutorial记录或整理</div>
+      <input type="file" id="f-tut" accept=".txt,.vtt,.srt" onchange="onF('tut',this)">
+    </div>
+    <div class="uc" id="uc-ppt" onclick="pick('ppt')">
+      <span class="ut t-boost" id="tp">加分项</span>
+      <div class="uc-i">📊</div>
+      <div class="uc-n">PPT/PDF</div>
+      <div class="uc-d">课件，提取结构</div>
+      <input type="file" id="f-ppt" accept=".pdf,.txt" onchange="onF('ppt',this)">
+    </div>
+    <div class="uc" id="uc-hw" onclick="pick('hw')">
+      <span class="ut t-boost" id="th">加分项</span>
+      <div class="uc-i">📋</div>
+      <div class="uc-n">作业/题目</div>
+      <div class="uc-d">练习题，预测考点</div>
+      <input type="file" id="f-hw" accept=".txt" onchange="onF('hw',this)">
+    </div>
   </div>
   <div class="tabs">
-    <div class="tab on" onclick="sw('a1',this)">&#127910; Lec字幕</div>
-    <div class="tab" onclick="sw('a2',this)">&#128483; Tut笔记</div>
-    <div class="tab" onclick="sw('a3',this)">&#128202; 课件内容</div>
-    <div class="tab" onclick="sw('a4',this)">&#128203; 作业题目</div>
+    <div class="tab on" onclick="sw('a1',this)">🎦 Lec字幕</div>
+    <div class="tab" onclick="sw('a2',this)">🗣️ Tut笔记</div>
+    <div class="tab" onclick="sw('a3',this)">📊 课件内容</div>
+    <div class="tab" onclick="sw('a4',this)">📋 作业题目</div>
   </div>
   <textarea id="a1" placeholder="把 EchoVideo 字幕文字粘贴到这里..." oninput="upd()"></textarea>
   <textarea id="a2" style="display:none" placeholder="Tutorial 笔记或录音整理..." oninput="upd()"></textarea>
@@ -117,141 +154,157 @@ select{border:1px solid var(--border);border-radius:7px;padding:7px 10px;font-si
   <textarea id="a4" style="display:none" placeholder="作业题目或练习题..." oninput="upd()"></textarea>
   <div class="hint">💡 文字和文件可以同时使用，内容会合并处理</div>
   <div class="comp">
-    <div class="ct"><span>材料完整度</span><span class="cp lo" id="cp">请先上传或粘贴材料</span></div>
+    <div class="ct">
+      <span>材料完整度</span>
+      <span class="cp lo" id="cp">请先上传或粘贴材料</span>
+    </div>
     <div class="bw"><div class="br" id="br" style="width:0%"></div></div>
     <div class="tg">
-      <span class="ci off" id="ci-lec">&#127910; Lec字幕</span>
-      <span class="ci off" id="ci-tut">&#128483; Tut笔记</span>
-      <span class="ci off" id="ci-ppt">&#128202; 课件</span>
-      <span class="ci off" id="ci-hw">&#128203; 作业题</span>
+      <span class="ci off" id="ci-lec">🎦 Lec字幕</span>
+      <span class="ci off" id="ci-tut">🗣️ Tut笔记</span>
+      <span class="ci off" id="ci-ppt">📊 课件</span>
+      <span class="ci off" id="ci-hw">📋 作业题</span>
     </div>
   </div>
   <div class="opts">
     <label>课程类型</label>
-    <select id="sj"><option value="econ">经济学/商科/公司治理</option><option value="law">法律</option><option value="cs">计算机/工程</option><option value="bio">生物/医学</option><option value="math">数学/统计</option><option value="general">通用学术</option></select>
+    <select id="sj">
+      <option value="econ">经济学/商科/公司治理</option>
+      <option value="law">法律</option>
+      <option value="cs">计算机/工程</option>
+      <option value="bio">生物/医学</option>
+      <option value="math">数学/统计</option>
+      <option value="general">通用学术</option>
+    </select>
     <label>课程代码</label>
     <input class="fi" id="cn" placeholder="如 FINS3626" style="width:120px">
   </div>
   <button class="go" id="go" onclick="gen()" disabled>请先上传或粘贴至少一项材料</button>
   <div class="out" id="out">
-    <div class="oh"><h2>📖 整理结果</h2><div class="acts"><button class="ab" onclick="cp2()">&#128203; 复制</button><button class="ab p" onclick="window.print()">🖨️ 打印/PDF</button></div></div>
+    <div class="oh">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <h2>📖 整理结果</h2>
+        <span class="qbadge qb-basic" id="qbadge"></span>
+      </div>
+      <div class="acts">
+        <button class="ab" onclick="cp2()">📋 复制全部</button>
+        <button class="ab p" onclick="window.print()">🖨️ 打印/PDF</button>
+      </div>
+    </div>
     <div class="cards" id="cards"></div>
   </div>
 </div>
 <script>
-var API="https://echotranslate-api.vercel.app/api/translate";
-var pwd=localStorage.getItem("et_pwd")||"";
-var fl={lec:"",tut:"",ppt:"",hw:""};
-document.getElementById("pw").value=pwd;
-document.getElementById("pw").oninput=function(){pwd=this.value.trim();localStorage.setItem("et_pwd",pwd);};
-function pick(k){document.getElementById("f-"+k).click();}
-function onF(k,inp){
-  var f=inp.files[0];if(!f)return;
-  var r=new FileReader();
-  r.onload=function(e){fl[k]=e.target.result;done(k,f.name);};
-  if(f.name.match(/\.(pdf|docx|pptx)$/i)){fl[k]="["+f.name+"]";done(k,f.name);alert("PDF/PPT请将文字复制粘贴到下方文本框");}else{r.readAsText(f,"UTF-8");}
+var CORRECT_PW = "12345";
+var fl = {lec:"", tut:"", ppt:"", hw:""};
+var pwOk = false;
+function checkPw() {
+  var v = document.getElementById("pw").value.trim();
+  var st = document.getElementById("pw-status");
+  pwOk = (v === CORRECT_PW);
+  if (v === "") { st.textContent = ""; st.className = ""; }
+  else if (pwOk) { st.textContent = "✓ 密码正确"; st.className = "ok"; }
+  else { st.textContent = "✗ 密码错误"; st.className = "bad"; }
 }
-function done(k,n){
-  document.getElementById("uc-"+k).classList.add("done");
-  document.getElementById("t"+k.charAt(0)).textContent="✓ "+n.slice(0,10);
-  document.getElementById("t"+k.charAt(0)).className="ut t-done";
+function pick(k) { document.getElementById("f-" + k).click(); }
+function onF(k, inp) {
+  var f = inp.files[0]; if (!f) return;
+  if (f.name.match(/\.(pdf|docx|pptx)$/i)) {
+    fl[k] = "[文件: " + f.name + "]";
+    done(k, f.name);
+    alert("PDF/PPT请将文字内容复制粘贴到下方对应文本框，效果更好");
+  } else {
+    var r = new FileReader();
+    r.onload = function(e) { fl[k] = e.target.result; done(k, f.name); };
+    r.readAsText(f, "UTF-8");
+  }
+}
+function done(k, n) {
+  document.getElementById("uc-" + k).classList.add("done");
+  var tid = {lec:"tl", tut:"tt", ppt:"tp", hw:"th"}[k];
+  document.getElementById(tid).textContent = "✓ " + n.slice(0,10);
+  document.getElementById(tid).className = "ut t-done";
   upd();
 }
-function sw(id,el){
+function sw(id, el) {
   document.querySelectorAll("textarea").forEach(function(t){t.style.display="none";});
   document.querySelectorAll(".tab").forEach(function(t){t.classList.remove("on");});
-  document.getElementById(id).style.display="block";
+  document.getElementById(id).style.display = "block";
   el.classList.add("on");
 }
-function gv(k){return(document.getElementById("a"+(k==="lec"?"1":k==="tut"?"2":k==="ppt"?"3":"4")).value||fl[k]||"").trim();}
-function upd(){
-  var w={lec:30,tut:30,ppt:25,hw:15},sc=0;
-  Object.keys(w).forEach(function(k){
-    var has=gv(k).length>10;
-    document.getElementById("ci-"+k).className="ci "+(has?"on":"off");
-    if(has)sc+=w[k];
-  });
-  document.getElementById("br").style.width=Math.min(100,sc)+"%";
-  var el=document.getElementById("cp");
-  if(sc===0){el.textContent="请先上传或粘贴材料";el.className="cp lo";}
-  else if(sc<55){el.textContent="基础版（"+sc+"%）";el.className="cp mi";}
-  else if(sc<85){el.textContent="完整版（"+sc+"%）✓";el.className="cp mi";}
-  else{el.textContent="超完整（"+sc+"%）🎯";el.className="cp hi";}
-  var btn=document.getElementById("go");
-  if(sc>0){btn.disabled=false;btn.textContent="✨ 开始整理笔记";}
-  else{btn.disabled=true;btn.textContent="请先上传或粘贴至少一项材料";}
+function gv(k) {
+  var map = {lec:"a1", tut:"a2", ppt:"a3", hw:"a4"};
+  return ((document.getElementById(map[k]).value || "") + " " + (fl[k] || "")).trim();
 }
-async function gen(){
-  if(!pwd){alert("请先输入访问密码");return;}
-  var parts=[],smap={econ:"经济学/商科/公司治理",law:"法律",cs:"计算机/工程",bio:"生物医学",math:"数学统计",general:"学术"};
-  var subj=document.getElementById("sj").value,cn=document.getElementById("cn").value.trim();
-  if(gv("lec"))parts.push("《Lecture字幕》
-"+gv("lec").slice(0,3000));
-  if(gv("tut"))parts.push("《Tutorial笔记》
-"+gv("tut").slice(0,2000));
-  if(gv("ppt"))parts.push("《课件内容》
-"+gv("ppt").slice(0,2000));
-  if(gv("hw"))parts.push("《作业/题目》
-"+gv("hw").slice(0,1000));
-  var prompt="你是UNSW中国留学生课堂笔记整理AI。课程："+smap[subj]+(cn?"( "+cn+" )":"")+"
-材料：
-"+parts.join("
-
-")+"
-
-请整理为结构化中文学习笔记，按以下JSON输出（只输出JSON）：
-{"overview":"概述2-3句","concepts":[{"term":"英文","zh":"中文","note":"补充"}],"structure":"逻辑结构分点","keypoints":["重点1","重点2"],"exam":["考点1"],"unclear":["待理解1"]}";
-  var btn=document.getElementById("go");
-  btn.disabled=true;btn.textContent="⏳ 整理中...";
+function upd() {
+  var w = {lec:30, tut:30, ppt:25, hw:15}, sc = 0;
+  Object.keys(w).forEach(function(k) {
+    var has = gv(k).length > 10;
+    document.getElementById("ci-" + k).className = "ci " + (has ? "on" : "off");
+    if (has) sc += w[k];
+  });
+  document.getElementById("br").style.width = Math.min(100, sc) + "%";
+  var el = document.getElementById("cp");
+  if (sc === 0) { el.textContent = "请先上传或粘贴材料"; el.className = "cp lo"; }
+  else if (sc < 55) { el.textContent = "基础版（" + sc + "%）"; el.className = "cp mi"; }
+  else if (sc < 85) { el.textContent = "完整版（" + sc + "%）✓"; el.className = "cp mi"; }
+  else { el.textContent = "超完整（" + sc + "%）🎯"; el.className = "cp hi"; }
+  var btn = document.getElementById("go");
+  if (sc > 0) { btn.disabled = false; btn.textContent = "✨ 开始整理笔记"; }
+  else { btn.disabled = true; btn.textContent = "请先上传或粘贴至少一项材料"; }
+}
+async function gen() {
+  if (!pwOk) { alert("请先输入正确的访问密码"); return; }
+  var smap = {econ:"经济学/商科/公司治理", law:"法律", cs:"计算机/工程", bio:"生物医学", math:"数学统计", general:"学术"};
+  var subj = document.getElementById("sj").value;
+  var cn = document.getElementById("cn").value.trim();
+  var parts = [], matCount = 0;
+  if (gv("lec").length > 10) { parts.push("【Lecture字幕/录音】\n" + gv("lec").slice(0,4000)); matCount++; }
+  if (gv("tut").length > 10) { parts.push("【Tutorial笔记】\n" + gv("tut").slice(0,2500)); matCount++; }
+  if (gv("ppt").length > 10) { parts.push("【课件/PPT内容】\n" + gv("ppt").slice(0,2500)); matCount++; }
+  if (gv("hw").length > 10) { parts.push("【作业/练习题】\n" + gv("hw").slice(0,1500)); matCount++; }
+  var hasHw = gv("hw").length > 10, hasPpt = gv("ppt").length > 10;
+  var btn = document.getElementById("go");
+  btn.disabled = true; btn.textContent = "⏳ 整理中...";
   document.getElementById("out").classList.add("show");
-  document.getElementById("cards").innerHTML="<div class=\"ld\"><div class=\"spin\"></div><p>AI正在阅读材料并整理笔记...</p><small>材料越多时间越长，通常15-30秒</small></div>";
-  try{
-    var r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:prompt,subject:subj,password:pwd,type:"notes"})});
-    var d=await r.json();
-    if(r.status===401){alert("密码错误");btn.disabled=false;btn.textContent="重试";return;}
-    var raw=(d.zh||d.error||"").trim().replace(/[\s\S]*?({[\s\S]*})[\s\S]*/,"$1");
-    var notes=JSON.parse(raw);
-    rend(notes,parts.length);
-  }catch(e){
-    document.getElementById("cards").innerHTML="<div class=\"card\"><div class=\"ch ch-yellow\"><span class=\"ch-i\">⚠️</span><div class=\"ch-t\">整理失败</div></div><div class=\"cb\"><p>"+esc(e.message)+"</p><p style=\"color:var(--muted);font-size:13px;margin-top:8px\">请检查密码是否正确，或减少材料量后重试。</p></div></div>";
+  document.getElementById("cards").innerHTML = '<div class="ld"><div class="spin"></div><p>AI正在阅读材料并整理笔记...</p><small>材料越多时间越长，通常15-30秒</small></div>';
+  var systemPrompt = "你是专业的澳洲大学留学生课堂笔记整理助手。根据提供的材料整理出结构化中文学习笔记。\n\n必须严格按以下JSON格式输出，只输出JSON，不要任何其他文字：\n{\"overview\":\"2-3句概述\",\"concepts\":[{\"term\":\"英文\",\"zh\":\"中文\",\"note\":\"说明\"}],\"structure\":\"结构分点\",\"keypoints\":[\"重点1\"],\"details\":[\"详细点1\"],\"tut_points\":[\"讨论点1\"],\"exam\":[\"考点1\"],\"exam_tips\":\"建议\",\"unclear\":[\"待理解点1\"]}";
+  var userPrompt = "课程：" + smap[subj] + (cn ? "（" + cn + "）" : "") + "\n已上传材料：" + matCount + " 项\n\n" + parts.join("\n\n---\n\n");
+  try {
+    var resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system:systemPrompt,messages:[{role:"user",content:userPrompt}]})
+    });
+    var data = await resp.json();
+    var raw = (data.content||[]).map(function(c){return c.text||"";}).join("").trim().replace(/^```json\s*/,"").replace(/\s*```$/,"").trim();
+    rend(JSON.parse(raw), matCount, hasHw, hasPpt);
+  } catch(e) {
+    document.getElementById("cards").innerHTML = '<div class="card"><div class="ch ch-yellow"><span class="ch-i">⚠️</span><div class="ch-t">整理失败</div></div><div class="cb"><p>'+esc(e.message)+'</p></div></div>';
   }
-  btn.disabled=false;btn.textContent="🔄 重新整理";
+  btn.disabled = false; btn.textContent = "🔄 重新整理";
   document.getElementById("cards").scrollIntoView({behavior:"smooth",block:"start"});
 }
-function rend(n,cnt){
+function rend(n,cnt,hasHw,hasPpt) {
+  var badge=document.getElementById("qbadge");
+  if(cnt>=4){badge.textContent="⭐ 超完整版";badge.className="qbadge qb-full";}
+  else if(cnt>=2){badge.textContent="✓ 完整版";badge.className="qbadge qb-good";}
+  else{badge.textContent="基础版";badge.className="qbadge qb-basic";}
   var h="";
   h+=cd("ch-blue","🎯","本节课概述","<p>"+esc(n.overview)+"</p>");
-  if(n.concepts&&n.concepts.length){
-    var c="<ul>";
-    n.concepts.forEach(function(x){c+="<li><strong><span class=\"tm\">"+esc(x.term)+"</span></strong> — "+esc(x.zh)+(x.note?" <em>( "+esc(x.note)+" )</em>":"")+"</li>";});
-    c+="</ul>";
-    h+=cd("ch-green","📚","核心概念 & 术语",c);
-  }
-  if(n.structure)h+=cd("ch-purple","🗂️","课程逻辑结构","<p style=\"white-space:pre-line\">"+esc(n.structure)+"</p>");
-  if(n.keypoints&&n.keypoints.length){
-    var k="<ul>";
-    n.keypoints.forEach(function(x){k+="<li>"+esc(x)+"</li>";});
-    k+="</ul>";
-    h+=cd("ch-yellow","&#11088;","课程重点",k);
-  }
-  if(n.exam&&n.exam.length){
-    var e="<ul>";
-    n.exam.forEach(function(x){e+="<li><span class=\"et\">考点</span> "+esc(x)+"</li>";});
-    e+="</ul>";
-    h+=cd("ch-red","🎓","可能考点预测",e);
-  }
-  if(n.unclear&&n.unclear.length){
-    var u="<ul>";
-    n.unclear.forEach(function(x){u+="<li><span class=\"wt\">待理解</span> "+esc(x)+"</li>";});
-    u+="</ul>";
-    h+=cd("","&#128172;","建议进一步理解",u);
-  }
-  h+="<div style=\"text-align:center;padding:14px;font-size:12px;color:var(--light)\">基于 "+cnt+" 项材料整理</div>";
+  if(n.concepts&&n.concepts.length){var c="<ul>";n.concepts.forEach(function(x){c+="<li><strong><span class='tm'>"+esc(x.term)+"</span></strong> — "+esc(x.zh)+(x.note?" <em>（"+esc(x.note)+"）</em>":"")+"</li>";});c+="</ul>";h+=cd("ch-green","📚","核心概念 & 关键术语",c);}
+  if(n.structure){h+=cd("ch-purple","🗂️","课程逻辑结构","<p style='white-space:pre-line'>"+esc(n.structure)+"</p>");}
+  if(n.keypoints&&n.keypoints.length){var k="<ul>";n.keypoints.forEach(function(x){k+="<li>⭐ "+esc(x)+"</li>";});k+="</ul>";h+=cd("ch-yellow","🔑","课程重点",k);}
+  if(n.details&&n.details.length){var d="<ul>";n.details.forEach(function(x){d+="<li>"+esc(x)+"</li>";});d+="</ul>";h+=cd("ch-blue","📖","详细知识点",d);}
+  if(n.tut_points&&n.tut_points.length&&n.tut_points[0].length>5){var tp="<ul>";n.tut_points.forEach(function(x){tp+="<li><span class='gt'>Tut</span> "+esc(x)+"</li>";});tp+="</ul>";h+=cd("ch-green","🗣️","Tutorial 讨论要点",tp);}
+  if(n.exam&&n.exam.length){var e="<ul>";n.exam.forEach(function(x){e+="<li><span class='et'>考点</span> "+esc(x)+"</li>";});e+="</ul>";if(n.exam_tips)e+="<p style='margin-top:10px;color:var(--muted);font-size:13px'>💡 "+esc(n.exam_tips)+"</p>";h+=cd("ch-red","🎓","可能考点预测"+(hasHw?"（基于作业题型分析）":""),e);}
+  if(n.unclear&&n.unclear.length&&n.unclear[0].length>3){var u="<ul>";n.unclear.forEach(function(x){u+="<li><span class='wt'>待理解</span> "+esc(x)+"</li>";});u+="</ul>";h+=cd("ch-gray","💬","建议进一步理解",u);}
+  h+='<div style="text-align:center;padding:14px;font-size:12px;color:var(--light)">基于 '+cnt+' 项材料整理 · 留学帮 AI</div>';
   document.getElementById("cards").innerHTML=h;
 }
-function cd(hc,ic,ti,bo){return "<div class=\"card\"><div class=\"ch "+hc+"\"><span class=\"ch-i\">"+ic+"</span><div class=\"ch-t\">"+ti+"</div></div><div class=\"cb\">"+bo+"</div></div>";}
+function cd(hc,ic,ti,bo){return '<div class="card"><div class="ch '+hc+'"><span class="ch-i">'+ic+'</span><div class="ch-t">'+ti+'</div></div><div class="cb">'+bo+'</div></div>';}
 function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
-function cp2(){navigator.clipboard.writeText(document.getElementById("cards").innerText).then(function(){alert("已复制！");});}
+function cp2(){navigator.clipboard.writeText(document.getElementById("cards").innerText).then(function(){alert("已复制到剪贴板！");});}
 upd();
 </script>
 </body>
