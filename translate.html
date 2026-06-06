@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EchoTranslate — UNSW 实时翻译</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#f7f8fa;--white:#fff;--border:#e8eaed;--text:#1a1a2e;--muted:#6b7280;--blue:#2563eb;--blue-light:#eff6ff;--blue-border:#bfdbfe;--green:#059669;--radius:12px;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans SC',sans-serif;min-height:100vh;}
+nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:6px;}
+.logo-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);}
+.nav-back{font-size:13px;color:var(--muted);text-decoration:none;}
+.nav-back:hover{color:var(--text);}
+main{max-width:860px;margin:0 auto;padding:40px 24px 80px;}
+.hero{text-align:center;margin-bottom:40px;}
+.hero-tag{display:inline-block;background:var(--blue-light);color:var(--blue);border:1px solid var(--blue-border);border-radius:20px;font-size:12px;font-weight:500;padding:4px 12px;margin-bottom:16px;}
+.hero h1{font-size:28px;font-weight:700;margin-bottom:10px;letter-spacing:-.5px;}
+.hero h1 span{color:var(--blue);}
+.hero p{font-size:15px;color:var(--muted);max-width:420px;margin:0 auto;}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:32px;}
+.mode{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:18px;}
+.mode-icon{font-size:20px;margin-bottom:8px;}
+.mode-name{font-size:14px;font-weight:600;margin-bottom:3px;}
+.mode-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+.mode-tag{display:inline-block;margin-top:6px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;}
+.tag-blue{background:var(--blue-light);color:var(--blue);border:1px solid var(--blue-border);}
+.tag-green{background:#ecfdf5;color:var(--green);border:1px solid #a7f3d0;}
+.steps{display:flex;flex-direction:column;gap:8px;margin-bottom:32px;}
+.step{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;display:flex;gap:14px;}
+.sn{width:22px;height:22px;border-radius:50%;background:var(--blue-light);border:1px solid var(--blue-border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--blue);}
+.st{font-size:13px;font-weight:500;margin-bottom:3px;}
+.sd{font-size:12px;color:var(--muted);line-height:1.6;}
+.sd code{background:#f3f4f6;padding:1px 5px;border-radius:3px;font-family:monospace;font-size:11px;}
+.bm-box{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:24px;text-align:center;margin-bottom:16px;}
+.bm-label{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.bm-btn{display:inline-block;background:var(--blue-light);border:1px solid var(--blue-border);border-radius:10px;color:var(--blue);font-size:14px;font-weight:600;padding:11px 26px;cursor:grab;text-decoration:none;user-select:none;}
+.drag-hint{font-size:11px;color:var(--muted);margin-top:8px;}
+.note{background:var(--blue-light);border:1px solid var(--blue-border);border-radius:8px;padding:12px 14px;font-size:12px;color:#1d4ed8;line-height:1.7;}
+footer{text-align:center;padding:20px;font-size:12px;color:var(--muted);border-top:1px solid var(--border);}
+@media(max-width:600px){.modes{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="/"><div class="logo-dot"></div>留学帮</a>
+  <a class="nav-back" href="/">← 返回主页</a>
+</nav>
+<main>
+  <div class="hero">
+    <div class="hero-tag">课堂翻译工具</div>
+    <h1>EchoTranslate<br><span>实时中文翻译</span></h1>
+    <p>一个书签，Lec 字幕自动翻译 + Tut 语音同传，专为 UNSW 中国留学生设计。</p>
+  </div>
+  <div class="modes">
+    <div class="mode">
+      <div class="mode-icon">📺</div>
+      <div class="mode-name">Lec 字幕模式</div>
+      <div class="mode-desc">EchoVideo 录播，自动读取字幕实时翻译，右侧显示翻译记录。</div>
+      <div class="mode-tag tag-blue">自动识别</div>
+    </div>
+    <div class="mode">
+      <div class="mode-icon">🎤</div>
+      <div class="mode-name">Tut 同传模式</div>
+      <div class="mode-desc">Tutorial 或任意页面，麦克风实时识别澳洲英语，约 0.5 秒出翻译。</div>
+      <div class="mode-tag tag-green">语音识别</div>
+    </div>
+  </div>
+  <div class="steps">
+    <div class="step"><div class="sn">1</div><div><div class="st">把书签按钮拖到浏览器书签栏</div><div class="sd">按住下方蓝色按钮，拖到浏览器顶部书签栏。没有书签栏？按 <code>Cmd+Shift+B</code>（Mac）/ <code>Ctrl+Shift+B</code>（Windows）显示。</div></div></div>
+    <div class="step"><div class="sn">2</div><div><div class="st">向群主获取访问密码</div><div class="sd">联系提供本工具的同学获取密码，无需注册账号，密码输入一次后自动记住。</div></div></div>
+    <div class="step"><div class="sn">3</div><div><div class="st">随时点书签启动</div><div class="sd">进 EchoVideo → 点书签 → 自动字幕翻译。进 Tutorial → 点书签 → 拨开关 → 允许麦克风 → 开始同传。</div></div></div>
+  </div>
+  <div class="bm-box">
+    <div class="bm-label">保存书签</div>
+    <a id="et-bm" href="#" class="bm-btn">🔖 拖我到书签栏</a>
+    <div class="drag-hint">↑ 按住拖到顶部书签栏</div>
+  </div>
+  <div class="note">
+    <b>两种模式一个书签：</b>在 EchoVideo 自动进字幕模式，其他页面自动进语音同传。右侧面板可折叠，不遮挡视频。翻译走安全服务器，密码不会泄露。
+  </div>
+</main>
+<footer>EchoTranslate · 留学帮 · 专为 UNSW 中国留学生</footer>
+<script>
+var bm = `javascript:(function(){var K=localStorage.getItem('et_k')||'';if(!K){K=prompt('\u8f93\u5165\u8bbf\u95ee\u5bc6\u7801');if(!K)return;localStorage.setItem('et_k',K);}var subj=localStorage.getItem('et_subj')||'econ';var SUBJ={econ:'\u7ecf\u6d4e\u5b66/\u5546\u79d1/\u516c\u53f8\u6cbb\u7406',law:'\u6cd5\u5f8b',cs:'\u8ba1\u7b97\u673a\u79d1\u5b66/\u5de5\u7a0b',bio:'\u751f\u7269\u533b\u5b66',math:'\u6570\u5b66/\u7edf\u8ba1',general:'\u5b66\u672f'};var isEcho=location.hostname.includes('echo360');var mode=isEcho?'cap':'mic';document.querySelectorAll('[id^="et-"]').forEach(function(e){e.remove();});document.querySelectorAll('style').forEach(function(s){if(s.id==='et-sty')s.remove();});if(window._etT)clearInterval(window._etT);if(window._etR){try{window._etR.stop();}catch(e){}}var sty=document.createElement('style');sty.id='et-sty';sty.textContent='#et-panel{position:fixed;right:0;top:50px;bottom:0;width:260px;background:#07080e;border-left:1px solid #141824;z-index:99998;display:flex;flex-direction:column;transition:transform .25s ease;font-family:PingFang SC,Microsoft YaHei,sans-serif;}#et-panel.hide{transform:translateX(100%);}#et-ph{padding:8px 12px;border-bottom:1px solid #0e1420;background:#050609;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}#et-feed{flex:1;overflow-y:auto;}#et-feed::-webkit-scrollbar{width:2px;}#et-feed::-webkit-scrollbar-thumb{background:#141824;}.et-item{padding:9px 14px;border-bottom:1px solid #090c14;}.et-item.active{border-left:2px solid #3a72e0;background:#070b16;}.et-en{font-size:11px;color:#1c2840;line-height:1.4;margin-bottom:3px;font-family:Helvetica Neue,Arial,sans-serif;}.et-zh{font-size:13px;color:#8ab0d8;font-weight:500;line-height:1.6;}#et-bar{position:fixed;bottom:0;left:0;right:260px;background:#050609;border-top:1px solid #141824;z-index:99998;padding:10px 18px 12px;transition:right .25s ease;font-family:PingFang SC,Microsoft YaHei,sans-serif;}#et-bar.full{right:0;}#et-cur-en{font-size:13px;color:#1c2840;font-family:Helvetica Neue,sans-serif;min-height:16px;margin-bottom:5px;line-height:1.4;}#et-cur-zh{font-size:21px;font-weight:500;color:#7ec8ff;min-height:30px;letter-spacing:.02em;line-height:1.4;}#et-foot{display:flex;align-items:center;gap:10px;margin-top:8px;}#et-sw{width:34px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#141824;transition:background .2s;flex-shrink:0;}#et-sw.on{background:#3a72e0;}#et-sw::after{content:"";position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;top:3px;left:3px;transition:left .2s;}#et-sw.on::after{left:17px;}#et-tab{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:99999;background:#07080e;border:1px solid #141824;border-right:none;border-radius:6px 0 0 6px;padding:12px 5px;cursor:pointer;writing-mode:vertical-rl;font-size:10px;font-weight:700;color:#3a72e0;letter-spacing:.1em;display:none;font-family:PingFang SC,sans-serif;}';document.head.appendChild(sty);var panel=document.createElement('div');panel.id='et-panel';panel.innerHTML='<div id="et-ph"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;'+(mode==='cap'?'background:rgba(58,114,224,.12);color:#3a72e0;border:1px solid rgba(58,114,224,.2)':'background:rgba(62,207,142,.1);color:#3ecf8e;border:1px solid rgba(62,207,142,.2)')+'">'+(mode==='cap'?'\ud83d\udcfa Lec':'\ud83c\udfa4 Tut')+'</span><select id="et-subj" style="background:#0a0c14;border:1px solid #141824;border-radius:4px;color:#4a6a90;font-size:10px;padding:2px 4px;max-width:76px;"><option value="econ">\u5546\u79d1/\u7ecf\u6d4e</option><option value="law">\u6cd5\u5f8b</option><option value="cs">CS/\u5de5\u7a0b</option><option value="bio">\u751f\u7269\u533b\u5b66</option><option value="math">\u6570\u5b66\u7edf\u8ba1</option><option value="general">\u901a\u7528</option></select></div><div style="display:flex;gap:5px;align-items:center;"><button id="et-clr" style="background:none;border:1px solid #141824;border-radius:4px;color:#1e2a3a;cursor:pointer;font-size:10px;padding:2px 7px;">\u6e05\u7a7a</button><button id="et-fold" style="background:none;border:none;color:#1e2a3a;cursor:pointer;font-size:14px;line-height:1;">\u25b6</button></div></div><div id="et-feed"></div>';document.body.appendChild(panel);var tab=document.createElement('div');tab.id='et-tab';tab.textContent='\u25c0 \u8bd1';document.body.appendChild(tab);var bar=document.createElement('div');bar.id='et-bar';bar.innerHTML='<div id="et-cur-en"></div><div id="et-cur-zh">'+(mode==='cap'?'\u64ad\u653e\u89c6\u9891\u5f00\u59cb\u7ffb\u8bd1...':'\u5f00\u542f\u540e\u5f00\u59cb\u540c\u4f20...')+'</div><div id="et-foot"><div id="et-sw"></div><span id="et-st" style="font-size:11px;color:#141c2e;flex:1;">'+(mode==='cap'?'Lec \u5b57\u5e55\u6a21\u5f0f':'Tut \u540c\u4f20\u6a21\u5f0f')+'</span></div>';document.body.appendChild(bar);document.getElementById('et-subj').value=subj;document.getElementById('et-subj').onchange=function(){subj=this.value;localStorage.setItem('et_subj',subj);};document.getElementById('et-clr').onclick=function(){document.getElementById('et-feed').innerHTML='';document.getElementById('et-cur-en').textContent='';document.getElementById('et-cur-zh').textContent='';};document.getElementById('et-fold').onclick=function(){panel.classList.add('hide');bar.classList.add('full');tab.style.display='block';};tab.onclick=function(){panel.classList.remove('hide');bar.classList.remove('full');tab.style.display='none';};var sw=document.getElementById('et-sw'),on=false;sw.onclick=function(){on?stop():start();};function start(){on=true;sw.className='on';mode==='cap'?startCap():startMic();}function stop(){on=false;sw.className='';document.getElementById('et-st').textContent='\u5df2\u505c\u6b62';clearInterval(window._etT);if(window._etR)try{window._etR.stop();}catch(e){}}function startCap(){document.getElementById('et-st').textContent='\ud83d\udcfa \u5b57\u5e55\u7ffb\u8bd1\u4e2d...';var last='',busy=false,cache={};window._etT=setInterval(async function(){if(!on||busy)return;var el=document.querySelector('[class*="sc-iBfVdv"]');if(!el)return;var t=el.textContent.replace(/\s+/g,' ').trim();if(!t||t===last||t.length<4)return;last=t;document.getElementById('et-cur-en').textContent=t;if(cache[t]){render(t,cache[t]);return;}busy=true;try{var z=await tx(t);cache[t]=z;render(t,z);}catch(e){document.getElementById('et-cur-zh').textContent='\u26a0 \u7ffb\u8bd1\u5931\u8d25';}busy=false;},400);}function startMic(){document.getElementById('et-st').textContent='\ud83c\udfa4 \u8046\u542c\u4e2d...';var SR=window.SpeechRecognition||window.webkitSpeechRecognition;var r=new SR();window._etR=r;r.lang='en-AU';r.continuous=true;r.interimResults=true;var buf='',busy=false,timer=null;r.onresult=function(e){var fin='',tmp='';for(var i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)fin+=e.results[i][0].transcript;else tmp+=e.results[i][0].transcript;}document.getElementById('et-cur-en').textContent=(fin||tmp).trim();if(fin.trim()){buf+=' '+fin.trim();clearTimeout(timer);timer=setTimeout(async function(){var s=buf.trim();buf='';if(!s||busy)return;busy=true;try{var z=await tx(s);render(s,z);}catch(e){document.getElementById('et-cur-zh').textContent='\u26a0 \u7ffb\u8bd1\u5931\u8d25';}busy=false;},450);}};r.onerror=function(e){if(e.error==='not-allowed')document.getElementById('et-st').textContent='\u26a0 \u8bf7\u5141\u8bb8\u9ea6\u514b\u98ce';};r.onend=function(){if(on)try{r.start();}catch(e){}};r.start();}async function tx(text){var res=await fetch('https://echotranslate-api.vercel.app/api/translate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text,subject:subj,password:K})});if(res.status===401){localStorage.removeItem('et_k');document.getElementById('et-cur-zh').textContent='\u26a0 \u5bc6\u7801\u9519\u8bef\uff0c\u5237\u65b0\u91cd\u8bd5';throw new Error('401');}var d=await res.json();return d.zh||'\u7ffb\u8bd1\u5931\u8d25';}function render(en,zh){document.getElementById('et-cur-zh').textContent=zh;var feed=document.getElementById('et-feed');var key=en.slice(0,48).replace(/['"]/g,'');if(feed.querySelector('[data-k="'+key+'"]'))return;var item=document.createElement('div');item.className='et-item active';item.setAttribute('data-k',key);item.innerHTML='<div class="et-en">'+en+'</div><div class="et-zh">'+zh+'</div>';feed.querySelectorAll('.active').forEach(function(x){x.classList.remove('active');});feed.appendChild(item);item.scrollIntoView({behavior:'smooth',block:'nearest'});}})();`;
+document.getElementById('et-bm').href = bm;
+</script>
+</body>
+</html>
