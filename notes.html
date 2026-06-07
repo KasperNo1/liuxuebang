@@ -291,17 +291,107 @@ function rend(n,cnt,hasHw,hasPpt) {
   else if(cnt>=2){badge.textContent="✓ 完整版";badge.className="qbadge qb-good";}
   else{badge.textContent="基础版";badge.className="qbadge qb-basic";}
   var h="";
+
+  // 1. 概述
   h+=cd("ch-blue","🎯","本节课概述","<p>"+esc(n.overview)+"</p>");
-  if(n.concepts&&n.concepts.length){var c="<ul>";n.concepts.forEach(function(x){c+="<li><strong><span class='tm'>"+esc(x.term)+"</span></strong> — "+esc(x.zh)+(x.note?" <em>（"+esc(x.note)+"）</em>":"")+"</li>";});c+="</ul>";h+=cd("ch-green","📚","核心概念 & 关键术语",c);}
+
+  // 2. 核心概念
+  if(n.concepts&&n.concepts.length){
+    var c="<ul>";
+    n.concepts.forEach(function(x){
+      c+="<li style='margin-bottom:10px'><strong><span class='tm'>"+esc(x.term)+"</span> "+esc(x.zh)+"</strong>";
+      if(x.definition) c+="<br><span style='color:var(--muted);font-size:13px'>📖 "+esc(x.definition)+"</span>";
+      if(x.importance) c+="<br><span style='color:#d97706;font-size:12px'>⚠️ 重要性："+esc(x.importance)+"</span>";
+      if(x.example) c+="<br><span style='color:var(--muted);font-size:12px'>📌 例子："+esc(x.example)+"</span>";
+      c+="</li>";
+    });
+    c+="</ul>";
+    h+=cd("ch-green","📚","核心概念 & 关键术语",c);
+  }
+
+  // 3. 结构
   if(n.structure){h+=cd("ch-purple","🗂️","课程逻辑结构","<p style='white-space:pre-line'>"+esc(n.structure)+"</p>");}
-  if(n.keypoints&&n.keypoints.length){var k="<ul>";n.keypoints.forEach(function(x){k+="<li>⭐ "+esc(x)+"</li>";});k+="</ul>";h+=cd("ch-yellow","🔑","课程重点",k);}
-  if(n.details&&n.details.length){var d="<ul>";n.details.forEach(function(x){d+="<li>"+esc(x)+"</li>";});d+="</ul>";h+=cd("ch-blue","📖","详细知识点",d);}
-  if(n.tut_points&&n.tut_points.length&&n.tut_points[0].length>5){var tp="<ul>";n.tut_points.forEach(function(x){tp+="<li><span class='gt'>Tut</span> "+esc(x)+"</li>";});tp+="</ul>";h+=cd("ch-green","🗣️","Tutorial 讨论要点",tp);}
-  if(n.exam&&n.exam.length){var e="<ul>";n.exam.forEach(function(x){e+="<li><span class='et'>考点</span> "+esc(x)+"</li>";});e+="</ul>";if(n.exam_tips)e+="<p style='margin-top:10px;color:var(--muted);font-size:13px'>💡 "+esc(n.exam_tips)+"</p>";h+=cd("ch-red","🎓","可能考点预测"+(hasHw?"（基于作业题型分析）":""),e);}
-  if(n.unclear&&n.unclear.length&&n.unclear[0].length>3){var u="<ul>";n.unclear.forEach(function(x){u+="<li><span class='wt'>待理解</span> "+esc(x)+"</li>";});u+="</ul>";h+=cd("ch-gray","💬","建议进一步理解",u);}
-  h+='<div style="text-align:center;padding:14px;font-size:12px;color:var(--light)">基于 '+cnt+' 项材料整理 · 留学帮 AI</div>';
+
+  // 4. 重点
+  if(n.keypoints&&n.keypoints.length){
+    var k="<ul>";
+    n.keypoints.forEach(function(x){
+      if(typeof x === 'object' && x.point){
+        k+="<li style='margin-bottom:8px'><strong>⭐ "+esc(x.point)+"</strong><br><span style='font-size:13px;color:var(--muted)'>"+esc(x.detail)+"</span></li>";
+      } else {
+        k+="<li>⭐ "+esc(x)+"</li>";
+      }
+    });
+    k+="</ul>";
+    h+=cd("ch-yellow","🔑","课程重点",k);
+  }
+
+  // 5. 详细知识点
+  if(n.details&&n.details.length){
+    var d="<ul>";
+    n.details.forEach(function(x){
+      if(typeof x === 'object' && x.topic){
+        d+="<li style='margin-bottom:8px'><strong>"+esc(x.topic)+"</strong><br><span style='font-size:13px;color:var(--muted)'>"+esc(x.content)+"</span></li>";
+      } else {
+        d+="<li>"+esc(x)+"</li>";
+      }
+    });
+    d+="</ul>";
+    h+=cd("ch-blue","📖","详细知识点",d);
+  }
+
+  // 6. 公式/框架
+  if(n.formulas&&n.formulas.length&&n.formulas[0].length>2){
+    var f="<ul>";
+    n.formulas.forEach(function(x){f+="<li><code style='background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:13px'>"+esc(x)+"</code></li>";});
+    f+="</ul>";
+    h+=cd("ch-purple","📊","重要公式 & 框架",f);
+  }
+
+  // 7. Tut讨论
+  if(n.tut_points&&n.tut_points.length&&n.tut_points[0].length>5){
+    var tp="<ul>";
+    n.tut_points.forEach(function(x){tp+="<li><span class='gt'>Tut</span> "+esc(x)+"</li>";});
+    tp+="</ul>";
+    h+=cd("ch-green","🗣️","Tutorial 讨论要点",tp);
+  }
+
+  // 8. 考点预测
+  if(n.exam&&n.exam.length){
+    var e="<ul>";
+    n.exam.forEach(function(x){
+      if(typeof x === 'object' && x.topic){
+        e+="<li style='margin-bottom:8px'><span class='et'>考点</span> ";
+        if(x.question_type) e+="<span class='wt'>"+esc(x.question_type)+"</span> ";
+        e+="<strong>"+esc(x.topic)+"</strong>";
+        if(x.tip) e+="<br><span style='font-size:12px;color:var(--muted)'>💡 "+esc(x.tip)+"</span>";
+        e+="</li>";
+      } else {
+        e+="<li><span class='et'>考点</span> "+esc(x)+"</li>";
+      }
+    });
+    e+="</ul>";
+    if(n.exam_tips) e+="<p style='margin-top:12px;padding:10px;background:#fff7ed;border-radius:8px;font-size:13px'>🎯 备考建议："+esc(n.exam_tips)+"</p>";
+    h+=cd("ch-red","🎓","可能考点预测"+(hasHw?"（基于作业题型分析）":""),e);
+  }
+
+  // 9. 章节联系
+  if(n.connections&&n.connections.length>5){
+    h+=cd("ch-gray","🔗","知识联系","<p>"+esc(n.connections)+"</p>");
+  }
+
+  // 10. 待理解
+  if(n.unclear&&n.unclear.length&&n.unclear[0].length>3){
+    var u="<ul>";
+    n.unclear.forEach(function(x){u+="<li><span class='wt'>待理解</span> "+esc(x)+"</li>";});
+    u+="</ul>";
+    h+=cd("ch-gray","💬","建议进一步理解",u);
+  }
+
+  h+='<div style="text-align:center;padding:14px;font-size:12px;color:var(--light)">基于 '+cnt+' 项材料整理 · GPT-4o · 留学帮 AI</div>';
   document.getElementById("cards").innerHTML=h;
 }
+
 function cd(hc,ic,ti,bo){return '<div class="card"><div class="ch '+hc+'"><span class="ch-i">'+ic+'</span><div class="ch-t">'+ti+'</div></div><div class="cb">'+bo+'</div></div>';}
 function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function cp2(){navigator.clipboard.writeText(document.getElementById("cards").innerText).then(function(){alert("已复制到剪贴板！");});}
