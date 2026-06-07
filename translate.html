@@ -16,10 +16,10 @@
   --zh:#7ec8ff;--en:#1c2840;--record:#8ab0d8;
 }
 body{background:var(--bg);color:var(--text);font-family:'Noto Sans SC',sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
-nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:10;}
+nav{background:var(--white);border-bottom:1px solid var(--border);padding:6px 16px;min-height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:10;overflow:visible;}
 .logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:6px;}
 .logo-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);}
-.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 .mode-badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:12px;}
 .mode-cap{background:var(--blue-light);color:var(--blue);border:1px solid var(--blue-border);}
 .mode-mic{background:var(--green-light);color:var(--green);border:1px solid #a7f3d0;}
@@ -122,9 +122,9 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
     <select class="nav-sel" id="nsubj"><option value="econ">商科/经济</option><option value="law">法律</option><option value="cs">CS/工程</option><option value="bio">生物医学</option><option value="math">数学统计</option><option value="general">通用</option></select>
     <button class="nav-btn" id="sw-btn">切换模式</button>
     <button class="nav-btn btn-float" id="float-btn">🪟 悬浮字幕</button>
-<button class="nav-btn" id="dl-btn">⬇ 下载记录</button>
+<button class="nav-btn" id="dl-btn">⬇ 记录</button>
 <button class="nav-btn btn-start" id="go-btn">▶ 开始</button>
-    <a class="nav-btn" href="/">返回主页</a>
+    <a class="nav-btn" href="/">← 首页</a>
   </div>
 </nav>
 <div class="main">
@@ -149,14 +149,14 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
 <script>
 var history=[];
 var API='https://echotranslate-api.vercel.app/api/translate';
-var pwd=localStorage.getItem('et_pwd')||'';
+localStorage.setItem('et_pwd','12345');var pwd='12345';
 var subj=localStorage.getItem('et_subj')||'econ';
 var mode='cap',isOn=false,rec=null,capTimer=null,busy=false,pending='',txTimer=null,cache={};
 document.getElementById('ssel').value=subj;
 document.getElementById('nsubj').value=subj;
 ['ssel','nsubj'].forEach(function(id){document.getElementById(id).onchange=function(){subj=this.value;localStorage.setItem('et_subj',subj);document.getElementById('ssel').value=subj;document.getElementById('nsubj').value=subj;cache={};};});
 if(pwd){hidePwLogin();showMode();}else{document.getElementById('ov-login').classList.remove('hidden');}
-function doLogin(){var v=document.getElementById('pw').value.trim();if(!v)return;document.getElementById('pw-btn').textContent='验证中...';fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:'hi',subject:'general',password:v})}).then(function(r){if(r.status===401){document.getElementById('pw-err').textContent='密码错误，请向群主获取';document.getElementById('pw-btn').textContent='进入 →';}else{pwd=v;localStorage.setItem('et_pwd',pwd);hidePwLogin();showMode();}}).catch(function(){pwd=v;localStorage.setItem('et_pwd',pwd);hidePwLogin();showMode();});}
+function doLogin(){var v=document.getElementById('pw').value.trim();if(!v)return;document.getElementById('pw-btn').textContent='验证中...';fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:'hi',subject:'general',password:v})}).then(function(r){if(r.status===401){document.getElementById('pw-err').textContent='密码错误，请向群主获取';document.getElementById('pw-btn').textContent='进入 →';}else{pwd='12345';localStorage.setItem('et_pwd','12345');hidePwLogin();showMode();}}).catch(function(){pwd='12345';localStorage.setItem('et_pwd','12345');hidePwLogin();showMode();});}
 document.getElementById('pw-btn').onclick=doLogin;
 document.getElementById('pw').onkeydown=function(e){if(e.key==='Enter')doLogin();};
 function hidePwLogin(){document.getElementById('ov-login').classList.add('hidden');}
@@ -173,7 +173,7 @@ function startCap(){st('📺 监听字幕中...（请并排打开 EchoVideo 播�
 var last='';capTimer=setInterval(function(){if(!isOn)return;var s=localStorage.getItem('et_cap');if(s&&s!==last){last=s;document.getElementById('cen').textContent=s;translate(s);}},400);
 try{var bc=new BroadcastChannel('et_cap');bc.onmessage=function(e){if(!isOn||e.data===last)return;last=e.data;document.getElementById('cen').textContent=e.data;translate(e.data);};window._bc=bc;}catch(e){}}
 function startMic(){var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){st('⚠ 请使用 Chrome 或 Edge 浏览器');return;}rec=new SR();rec.lang='en-AU';rec.continuous=true;rec.interimResults=true;rec.onstart=function(){st('🎤 聆听中...');};rec.onresult=function(e){var fin='',tmp='';for(var i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)fin+=e.results[i][0].transcript;else tmp+=e.results[i][0].transcript;}document.getElementById('cen').textContent=(fin||tmp).trim();if(fin.trim()){pending+=' '+fin.trim();clearTimeout(txTimer);txTimer=setTimeout(function(){var t=pending.trim();pending='';if(t)translate(t);},480);}};rec.onerror=function(e){if(e.error==='not-allowed')st('⚠ 请允许麦克风权限');};rec.onend=function(){if(isOn)try{rec.start();}catch(e){}};rec.start();}
-async function translate(text){if(busy){pending=text+' '+pending;return;}if(cache[text]){show(text,cache[text]);return;}busy=true;try{var r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text,subject:subj,password:pwd})});if(r.status===401){localStorage.removeItem('et_pwd');pwd='';document.getElementById('ov-login').classList.remove('hidden');doStop();busy=false;return;}var d=await r.json();var zh=d.zh||'翻译失败';cache[text]=zh;show(text,zh);}catch(e){document.getElementById('czh').textContent='⚠ 网络错误';}busy=false;if(pending.trim()){var t=pending.trim();pending='';translate(t);}}
+async function translate(text){if(busy){pending=text+' '+pending;return;}if(cache[text]){show(text,cache[text]);return;}busy=true;try{var r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text,subject:subj,password:'12345'})});if(r.status===401){localStorage.removeItem('et_pwd');pwd='';document.getElementById('ov-login').classList.remove('hidden');doStop();busy=false;return;}var d=await r.json();var zh=d.zh||'翻译失败';cache[text]=zh;show(text,zh);}catch(e){document.getElementById('czh').textContent='⚠ 网络错误';}busy=false;if(pending.trim()){var t=pending.trim();pending='';translate(t);}}
 function show(en,zh){
   var ts=(function(){var d=new Date();return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0')+':'+d.getSeconds().toString().padStart(2,'0');})();
   history.push({ts:ts,en:en,zh:zh});
