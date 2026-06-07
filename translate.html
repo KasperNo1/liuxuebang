@@ -16,10 +16,10 @@
   --zh:#7ec8ff;--en:#1c2840;--record:#8ab0d8;
 }
 body{background:var(--bg);color:var(--text);font-family:'Noto Sans SC',sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
-nav{background:var(--white);border-bottom:1px solid var(--border);padding:6px 16px;min-height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:10;overflow:visible;}
+nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:10;}
 .logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:6px;}
 .logo-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);}
-.nav-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.nav-right{display:flex;align-items:center;gap:10px;}
 .mode-badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:12px;}
 .mode-cap{background:var(--blue-light);color:var(--blue);border:1px solid var(--blue-border);}
 .mode-mic{background:var(--green-light);color:var(--green);border:1px solid #a7f3d0;}
@@ -75,25 +75,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:6px 16
 .mc-t{display:inline-block;margin-top:7px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;}
 .tb{background:rgba(58,114,224,.12);color:#3a72e0;border:1px solid rgba(58,114,224,.2);}
 .tg{background:rgba(62,207,142,.1);color:#3ecf8e;border:1px solid rgba(62,207,142,.2);}
-
-/* ===== FLOATING SUBTITLE ===== */
-#float-win{position:fixed;z-index:9999;background:rgba(0,0,0,0.82);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:14px 18px 12px;min-width:300px;max-width:88vw;box-shadow:0 8px 32px rgba(0,0,0,.5);display:none;user-select:none;backdrop-filter:blur(8px);}
-#float-win.visible{display:block;}
-.fh{cursor:grab;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.08);}
-.fh:active{cursor:grabbing;}
-.fl{font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:.1em;text-transform:uppercase;}
-.fc{display:flex;gap:6px;}
-.fb{background:rgba(255,255,255,0.08);border:none;border-radius:5px;color:rgba(255,255,255,0.5);font-size:11px;padding:3px 7px;cursor:pointer;font-family:inherit;}
-.fb:hover{background:rgba(255,255,255,0.16);color:#fff;}
-.sp{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);display:none;flex-direction:column;gap:8px;}
-.sp.open{display:flex;}
-.sr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.sl{font-size:10px;color:rgba(255,255,255,0.4);width:36px;flex-shrink:0;}
-.btn-float{background:#7c3aed!important;color:#fff!important;border-color:#7c3aed!important;}
-.cdot{width:16px;height:16px;border-radius:50%;cursor:pointer;border:2px solid transparent;}
-.cdot.on{border-color:#fff;}
-.pb{font-size:10px;padding:2px 7px;border-radius:4px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.5);cursor:pointer;}
-.pb:hover,.pb.on{background:rgba(124,58,237,0.4);border-color:#7c3aed;color:#fff;}</style>
+</style>
 </head>
 <body>
 <div class="overlay" id="ov-login">
@@ -121,10 +103,8 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:6px 16
     <span class="mode-badge mode-cap" id="mbadge">📺 字幕模式</span>
     <select class="nav-sel" id="nsubj"><option value="econ">商科/经济</option><option value="law">法律</option><option value="cs">CS/工程</option><option value="bio">生物医学</option><option value="math">数学统计</option><option value="general">通用</option></select>
     <button class="nav-btn" id="sw-btn">切换模式</button>
-    <button class="nav-btn btn-float" id="float-btn">🪟 悬浮字幕</button>
-<button class="nav-btn" id="dl-btn">⬇ 记录</button>
-<button class="nav-btn btn-start" id="go-btn">▶ 开始</button>
-    <a class="nav-btn" href="/">← 首页</a>
+    <button class="nav-btn btn-start" id="go-btn">▶ 开始</button>
+    <a class="nav-btn" href="/">返回主页</a>
   </div>
 </nav>
 <div class="main">
@@ -147,7 +127,6 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:6px 16
 </div>
 <div class="tab" id="tab">◀ 记录</div>
 <script>
-var txLog=[];
 var API='https://echotranslate-api.vercel.app/api/translate';
 localStorage.setItem('et_pwd','12345');var pwd='12345';
 var subj=localStorage.getItem('et_subj')||'econ';
@@ -174,98 +153,11 @@ var last='';capTimer=setInterval(function(){if(!isOn)return;var s=localStorage.g
 try{var bc=new BroadcastChannel('et_cap');bc.onmessage=function(e){if(!isOn||e.data===last)return;last=e.data;document.getElementById('cen').textContent=e.data;translate(e.data);};window._bc=bc;}catch(e){}}
 function startMic(){var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){st('⚠ 请使用 Chrome 或 Edge 浏览器');return;}rec=new SR();rec.lang='en-AU';rec.continuous=true;rec.interimResults=true;rec.onstart=function(){st('🎤 聆听中...');};rec.onresult=function(e){var fin='',tmp='';for(var i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)fin+=e.results[i][0].transcript;else tmp+=e.results[i][0].transcript;}document.getElementById('cen').textContent=(fin||tmp).trim();if(fin.trim()){pending+=' '+fin.trim();clearTimeout(txTimer);txTimer=setTimeout(function(){var t=pending.trim();pending='';if(t)translate(t);},480);}};rec.onerror=function(e){if(e.error==='not-allowed')st('⚠ 请允许麦克风权限');};rec.onend=function(){if(isOn)try{rec.start();}catch(e){}};rec.start();}
 async function translate(text){if(busy){pending=text+' '+pending;return;}if(cache[text]){show(text,cache[text]);return;}busy=true;try{var r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text,subject:subj,pw:'12345'})});if(r.status===401){localStorage.removeItem('et_pwd');pwd='';document.getElementById('ov-login').classList.remove('hidden');doStop();busy=false;return;}var d=await r.json();var zh=d.zh||'翻译失败';cache[text]=zh;show(text,zh);}catch(e){document.getElementById('czh').textContent='⚠ 网络错误';}busy=false;if(pending.trim()){var t=pending.trim();pending='';translate(t);}}
-function show(en,zh){
-  var ts=(function(){var d=new Date();return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0')+':'+d.getSeconds().toString().padStart(2,'0');})();
-  txLog.push({ts:ts,en:en,zh:zh});
-document.getElementById('czh').textContent=zh;  if(document.getElementById('float-win').classList.contains('visible')){document.getElementById('fen').textContent=en;document.getElementById('fzh').textContent=zh;}
-  var feed=document.getElementById('feed');var key=en.slice(0,50).replace(/['"]/g,'');if(feed.querySelector('[data-k="'+key+'"]'))return;var item=document.createElement('div');item.className='fi active';item.setAttribute('data-k',key);item.innerHTML='<div class="fi-en">'+en+'</div><div class="fi-zh">'+zh+'</div>';feed.querySelectorAll('.active').forEach(function(x){x.classList.remove('active');});feed.appendChild(item);item.scrollIntoView({behavior:'smooth',block:'nearest'});}
+function show(en,zh){document.getElementById('czh').textContent=zh;var feed=document.getElementById('feed');var key=en.slice(0,50).replace(/['"]/g,'');if(feed.querySelector('[data-k="'+key+'"]'))return;var item=document.createElement('div');item.className='fi active';item.setAttribute('data-k',key);item.innerHTML='<div class="fi-en">'+en+'</div><div class="fi-zh">'+zh+'</div>';feed.querySelectorAll('.active').forEach(function(x){x.classList.remove('active');});feed.appendChild(item);item.scrollIntoView({behavior:'smooth',block:'nearest'});}
 function st(t){document.getElementById('stext').textContent=t;}
 document.getElementById('clr').onclick=function(){document.getElementById('feed').innerHTML='';document.getElementById('cen').textContent='已清空';document.getElementById('czh').textContent='—';cache={};};
 document.getElementById('rfold').onclick=function(){document.getElementById('rp').classList.add('collapsed');document.getElementById('tab').style.display='block';};
 document.getElementById('tab').onclick=function(){document.getElementById('rp').classList.remove('collapsed');document.getElementById('tab').style.display='none';};
-
-// ===== FLOATING WINDOW =====
-var fw=document.getElementById('float-win');
-var fVis=false,fPos='bottom',fColor='#7ec8ff',fSz=26,fBg=82;
-var dragging=false,dragX=0,dragY=0;
-
-document.getElementById('float-btn').onclick=function(){
-  fVis=!fVis;
-  if(fVis){fw.classList.add('visible');applyPos();this.textContent='🪟 关闭悬浮';}
-  else{fw.classList.remove('visible');this.textContent='🪟 悬浮字幕';}
-};
-document.getElementById('fcl').onclick=function(){fVis=false;fw.classList.remove('visible');document.getElementById('float-btn').textContent='🪟 悬浮字幕';};
-document.getElementById('spt').onclick=function(){document.getElementById('sp').classList.toggle('open');};
-
-function applyPos(){
-  if(fPos==='bottom'){fw.style.bottom='16px';fw.style.left='50%';fw.style.transform='translateX(-50%)';fw.style.top='auto';fw.style.right='auto';}
-  else if(fPos==='top'){fw.style.top='16px';fw.style.left='50%';fw.style.transform='translateX(-50%)';fw.style.bottom='auto';fw.style.right='auto';}
-}
-
-document.getElementById('fh').addEventListener('mousedown',function(e){
-  if(e.target.tagName==='BUTTON')return;
-  dragging=true;var rect=fw.getBoundingClientRect();dragX=e.clientX-rect.left;dragY=e.clientY-rect.top;
-  fPos='free';document.querySelectorAll('.pb').forEach(function(b){b.classList.remove('on');});
-  document.querySelector('.pb[data-p="free"]').classList.add('on');e.preventDefault();
-});
-document.addEventListener('mousemove',function(e){if(!dragging)return;
-  var x=Math.max(0,Math.min(e.clientX-dragX,window.innerWidth-fw.offsetWidth));
-  var y=Math.max(0,Math.min(e.clientY-dragY,window.innerHeight-fw.offsetHeight));
-  fw.style.left=x+'px';fw.style.top=y+'px';fw.style.right='auto';fw.style.bottom='auto';fw.style.transform='none';
-});
-document.addEventListener('mouseup',function(){dragging=false;});
-document.getElementById('fh').addEventListener('touchstart',function(e){
-  if(e.target.tagName==='BUTTON')return;
-  dragging=true;var t=e.touches[0],rect=fw.getBoundingClientRect();dragX=t.clientX-rect.left;dragY=t.clientY-rect.top;fPos='free';e.preventDefault();
-},{passive:false});
-document.addEventListener('touchmove',function(e){if(!dragging)return;var t=e.touches[0];
-  fw.style.left=Math.max(0,Math.min(t.clientX-dragX,window.innerWidth-fw.offsetWidth))+'px';
-  fw.style.top=Math.max(0,Math.min(t.clientY-dragY,window.innerHeight-fw.offsetHeight))+'px';
-  fw.style.right='auto';fw.style.bottom='auto';fw.style.transform='none';
-},{passive:false});
-document.addEventListener('touchend',function(){dragging=false;});
-
-document.querySelectorAll('.pb').forEach(function(b){b.onclick=function(){
-  document.querySelectorAll('.pb').forEach(function(x){x.classList.remove('on');});this.classList.add('on');
-  fPos=this.dataset.p;applyPos();};});
-document.getElementById('szr').oninput=function(){fSz=parseInt(this.value);document.getElementById('szv').textContent=fSz;document.getElementById('fzh').style.fontSize=fSz+'px';};
-document.getElementById('enr').oninput=function(){document.getElementById('env').textContent=this.value;document.getElementById('fen').style.fontSize=this.value+'px';};
-document.getElementById('bgr').oninput=function(){fBg=parseInt(this.value);document.getElementById('bgv').textContent=fBg+'%';fw.style.background='rgba(0,0,0,'+fBg/100+')';};
-document.querySelectorAll('.cdot').forEach(function(d){d.onclick=function(){
-  document.querySelectorAll('.cdot').forEach(function(x){x.classList.remove('on');});this.classList.add('on');
-  fColor=this.dataset.c;document.getElementById('fzh').style.color=fColor;};});
-
-// ===== DOWNLOAD =====
-document.getElementById('dl-btn').onclick=function(){
-  if(!txLog.length){alert('还没有翻译记录');return;}
-  var lines=['EchoTranslate 翻译记录','导出时间：'+new Date().toLocaleString('zh-CN'),'总计 '+history.length+' 条','='.repeat(50),''];
-  txLog.forEach(function(h){lines.push('['+h.ts+']');lines.push('EN: '+h.en);lines.push('ZH: '+h.zh);lines.push('');});
-  var blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'});
-  var url=URL.createObjectURL(blob);var a=document.createElement('a');
-  a.href=url;a.download='EchoTranslate_'+new Date().toISOString().slice(0,10)+'.txt';a.click();URL.revokeObjectURL(url);
-};
 </script>
-
-<div id="float-win">
-  <div class="fh" id="fh"><span class="fl">⧐ 悬浮字幕</span><div class="fc"><button class="fb" id="spt">⚙ 样式</button><button class="fb" id="fcl">✕</button></div></div>
-  <div id="fen" style="font-size:13px;color:rgba(255,255,255,0.5);font-family:Helvetica Neue,Arial,sans-serif;line-height:1.4;margin-bottom:6px;">等待翻译...</div>
-  <div id="fzh" style="font-size:26px;color:#7ec8ff;font-weight:500;line-height:1.5;">—</div>
-  <div class="sp" id="sp">
-    <div class="sr"><span class="sl">字号</span><input type="range" style="flex:1;accent-color:#7c3aed;" id="szr" min="14" max="56" value="26"><span style="font-size:10px;color:rgba(255,255,255,0.5);width:2rem;text-align:right;" id="szv">26</span></div>
-    <div class="sr"><span class="sl">颜色</span><div style="display:flex;gap:5px;">
-      <div class="cdot on" style="background:#7ec8ff" data-c="#7ec8ff"></div>
-      <div class="cdot" style="background:#ffffff" data-c="#ffffff"></div>
-      <div class="cdot" style="background:#fde68a" data-c="#fde68a"></div>
-      <div class="cdot" style="background:#86efac" data-c="#86efac"></div>
-      <div class="cdot" style="background:#f9a8d4" data-c="#f9a8d4"></div>
-    </div></div>
-    <div class="sr"><span class="sl">背景</span><input type="range" style="flex:1;accent-color:#7c3aed;" id="bgr" min="0" max="100" value="82"><span style="font-size:10px;color:rgba(255,255,255,0.5);width:2.5rem;text-align:right;" id="bgv">82%</span></div>
-    <div class="sr"><span class="sl">英文</span><input type="range" style="flex:1;accent-color:#7c3aed;" id="enr" min="10" max="24" value="13"><span style="font-size:10px;color:rgba(255,255,255,0.5);width:2rem;text-align:right;" id="env">13</span></div>
-    <div class="sr"><span class="sl">位置</span><div style="display:flex;gap:5px;">
-      <button class="pb" data-p="top">顶部</button>
-      <button class="pb on" data-p="bottom">底部</button>
-      <button class="pb" data-p="free">自由</button>
-    </div></div>
-  </div>
-</div></body>
+</body>
 </html>
