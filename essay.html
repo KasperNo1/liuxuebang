@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Essay润色 & 降低AI率 — 留学帮</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#f7f8fa;--white:#fff;--border:#e8eaed;--text:#1a1a2e;--muted:#6b7280;--light:#9ca3af;--blue:#2563eb;--blue-l:#eff6ff;--green:#059669;--green-l:#ecfdf5;--yellow:#d97706;--yellow-l:#fffbeb;--purple:#7c3aed;--purple-l:#f5f3ff;--red:#dc2626;--red-l:#fef2f2;--r:12px;}
+body{background:var(--bg);color:var(--text);font-family:"Noto Sans SC",sans-serif;min-height:100vh;display:flex;flex-direction:column;}
+nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:6px;}
+.logo-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);}
+.nb{font-size:13px;color:var(--muted);text-decoration:none;}
+.nb:hover{color:var(--text);}
+.pg{flex:1;max-width:1000px;margin:0 auto;padding:32px 24px 60px;width:100%;}
+h1{font-size:22px;font-weight:700;margin-bottom:6px;}
+.sub{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:24px;}
+.pr{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:12px 18px;display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.pr label{font-size:13px;color:var(--muted);white-space:nowrap;}
+.fi{border:1px solid var(--border);border-radius:7px;padding:7px 11px;font-size:13px;font-family:inherit;outline:none;background:var(--white);}
+.fi:focus{border-color:var(--blue);}
+#pw-status{font-size:12px;font-weight:600;}
+#pw-status.ok{color:var(--green);}
+#pw-status.bad{color:var(--red);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media(max-width:640px){.grid2{grid-template-columns:1fr;}}
+.panel{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:18px;}
+.panel-title{font-size:14px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+textarea{width:100%;min-height:280px;border:1px solid var(--border);border-radius:8px;padding:12px;font-size:13px;font-family:inherit;resize:vertical;outline:none;line-height:1.7;}
+textarea:focus{border-color:var(--blue);}
+.wc{font-size:11px;color:var(--light);margin-top:4px;}
+.modes{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.mode-card{border:1.5px solid var(--border);border-radius:var(--r);padding:14px 16px;cursor:pointer;transition:all .15s;}
+.mode-card:hover{border-color:var(--blue);background:var(--blue-l);}
+.mode-card.selected{border-color:var(--blue);background:var(--blue-l);}
+.mode-card.selected.green{border-color:var(--green);background:var(--green-l);}
+.mode-card.selected.purple{border-color:var(--purple);background:var(--purple-l);}
+.mode-title{font-size:14px;font-weight:600;margin-bottom:3px;}
+.mode-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+.badge{font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;margin-left:6px;}
+.badge-blue{background:var(--blue-l);color:var(--blue);}
+.badge-green{background:var(--green-l);color:var(--green);}
+.badge-purple{background:var(--purple-l);color:var(--purple);}
+.go{width:100%;padding:13px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s;}
+.go:hover:not(:disabled){background:#1d4ed8;}
+.go:disabled{background:#93c5fd;cursor:not-allowed;}
+.steps{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+.step{display:flex;align-items:center;gap:10px;font-size:13px;padding:8px 12px;border-radius:8px;background:var(--bg);}
+.step-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
+.step-dot.wait{background:#f3f4f6;color:var(--light);}
+.step-dot.active{background:#dbeafe;color:var(--blue);}
+.step-dot.done{background:var(--green-l);color:var(--green);}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid #dbeafe;border-top-color:var(--blue);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;}
+@keyframes sp{to{transform:rotate(360deg);}}
+.result-area{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:18px;}
+.result-text{font-size:14px;line-height:1.9;white-space:pre-wrap;color:var(--text);}
+.acts{display:flex;gap:8px;margin-bottom:14px;}
+.ab{font-size:12px;font-weight:500;padding:6px 13px;border-radius:7px;border:1px solid var(--border);background:var(--white);color:var(--muted);cursor:pointer;font-family:inherit;}
+.ab:hover{color:var(--text);}
+.ab.p{background:var(--blue);color:#fff;border-color:var(--blue);}
+.lang-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 8px;border-radius:4px;font-weight:500;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="/"><div class="logo-dot"></div>留学帮</a>
+  <a class="nb" href="/">← 返回主页</a>
+</nav>
+<div class="pg">
+  <h1>✍️ Essay 润色 & 降低AI率</h1>
+  <p class="sub">支持学术润色、三重语言转换降低AI率，或两者结合。</p>
+
+  <div class="pr">
+    <label>访问密码</label>
+    <input class="fi" id="pw" type="password" placeholder="输入密码..." style="max-width:200px" autocomplete="off" oninput="checkPw()">
+    <span id="pw-status"></span>
+  </div>
+
+  <div class="grid2">
+    <div>
+      <div class="panel">
+        <div class="panel-title">📝 原文</div>
+        <textarea id="input-text" placeholder="将你的 Essay 内容粘贴到这里..." oninput="updateWc()"></textarea>
+        <div class="wc" id="wc">0 字</div>
+      </div>
+      <div style="margin-top:16px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px;">选择模式</div>
+        <div class="modes">
+          <div class="mode-card selected" id="mode-humanize" onclick="selectMode('humanize')">
+            <div class="mode-title">🌐 三重语言转换<span class="badge badge-green">降低AI率</span></div>
+            <div class="mode-desc">英文 → 中文 → 日文 → 英文，经过3种语言结构重构，有效降低AI检测率</div>
+          </div>
+          <div class="mode-card" id="mode-polish" onclick="selectMode('polish')">
+            <div class="mode-title">✨ 学术润色<span class="badge badge-blue">提升表达</span></div>
+            <div class="mode-desc">保留原有论点，优化句式结构、逻辑连贯性和学术表达</div>
+          </div>
+          <div class="mode-card" id="mode-both" onclick="selectMode('both')">
+            <div class="mode-title">🚀 润色 + 降低AI率<span class="badge badge-purple">推荐</span></div>
+            <div class="mode-desc">先学术润色，再做三重语言转换，质量最高、AI率最低</div>
+          </div>
+        </div>
+        <button class="go" id="go-btn" onclick="run()" disabled>请先输入内容和密码</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel" id="result-panel">
+        <div class="panel-title">📊 处理过程</div>
+        <div class="steps" id="steps-area">
+          <div class="step"><div class="step-dot wait" id="d1">1</div><span id="s1">等待开始...</span></div>
+          <div class="step"><div class="step-dot wait" id="d2">2</div><span id="s2"></span></div>
+          <div class="step"><div class="step-dot wait" id="d3">3</div><span id="s3"></span></div>
+          <div class="step"><div class="step-dot wait" id="d4">4</div><span id="s4"></span></div>
+        </div>
+        <div id="output-area" style="display:none;">
+          <div class="acts">
+            <button class="ab p" onclick="copyResult()">📋 复制结果</button>
+            <button class="ab" onclick="showStep('zh')" id="btn-zh" style="display:none;">中文过程</button>
+            <button class="ab" onclick="showStep('ja')" id="btn-ja" style="display:none;">日文过程</button>
+          </div>
+          <div class="result-area">
+            <div class="result-text" id="result-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var CORRECT_PW = "12345";
+var pwOk = false;
+var currentMode = "humanize";
+var resultData = null;
+var currentView = "final";
+
+function checkPw() {
+  var v = document.getElementById("pw").value.trim();
+  var st = document.getElementById("pw-status");
+  pwOk = (v === CORRECT_PW);
+  if (!v) { st.textContent = ""; st.className = ""; }
+  else if (pwOk) { st.textContent = "✓ 密码正确"; st.className = "ok"; }
+  else { st.textContent = "✗ 密码错误"; st.className = "bad"; }
+  updateBtn();
+}
+
+function updateWc() {
+  var t = document.getElementById("input-text").value;
+  var words = t.trim() ? t.trim().split(/s+/).length : 0;
+  document.getElementById("wc").textContent = words + " 字";
+  updateBtn();
+}
+
+function updateBtn() {
+  var t = document.getElementById("input-text").value.trim();
+  var btn = document.getElementById("go-btn");
+  if (pwOk && t.length > 20) {
+    btn.disabled = false;
+    btn.textContent = "开始处理 →";
+  } else if (!pwOk) {
+    btn.disabled = true;
+    btn.textContent = "请先输入密码";
+  } else {
+    btn.disabled = true;
+    btn.textContent = "请先输入内容";
+  }
+}
+
+function selectMode(m) {
+  currentMode = m;
+  ["humanize","polish","both"].forEach(function(k) {
+    var el = document.getElementById("mode-"+k);
+    el.className = "mode-card" + (k === m ? " selected" + (k==="polish"?" ":(k==="both"?" purple":" green")) : "");
+  });
+}
+
+function setStep(n, status, text) {
+  var dot = document.getElementById("d"+n);
+  var span = document.getElementById("s"+n);
+  dot.className = "step-dot " + status;
+  if (status === "active") dot.innerHTML = '<span class="spin"></span>';
+  else if (status === "done") dot.textContent = "✓";
+  else dot.textContent = n;
+  if (text) span.textContent = text;
+}
+
+async function run() {
+  if (!pwOk) { alert("请先输入正确密码"); return; }
+  var text = document.getElementById("input-text").value.trim();
+  if (!text) return;
+
+  var btn = document.getElementById("go-btn");
+  btn.disabled = true; btn.textContent = "处理中...";
+  document.getElementById("output-area").style.display = "none";
+  document.getElementById("btn-zh").style.display = "none";
+  document.getElementById("btn-ja").style.display = "none";
+
+  // Reset steps
+  for (var i=1;i<=4;i++) setStep(i,"wait","");
+
+  if (currentMode === "polish") {
+    setStep(1,"active","学术润色中...");
+    setStep(2,"wait","—");
+    setStep(3,"wait","—");
+    setStep(4,"wait","—");
+  } else if (currentMode === "humanize") {
+    setStep(1,"active","英文 → 中文...");
+    setStep(2,"wait","中文 → 日文");
+    setStep(3,"wait","日文 → 英文");
+    setStep(4,"wait","完成");
+  } else {
+    setStep(1,"active","学术润色中...");
+    setStep(2,"wait","英文 → 中文");
+    setStep(3,"wait","中文 → 日文");
+    setStep(4,"wait","日文 → 英文");
+  }
+
+  try {
+    var resp = await fetch("https://echotranslate-api.vercel.app/api/essay", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({text:text, mode:currentMode, password:"12345"})
+    });
+
+    if (currentMode === "polish") {
+      setStep(1,"done","润色完成 ✓");
+    } else if (currentMode === "humanize") {
+      setStep(1,"done","英文 → 中文 ✓");
+      setStep(2,"done","中文 → 日文 ✓");
+      setStep(3,"done","日文 → 英文 ✓");
+      setStep(4,"done","处理完成！");
+    } else {
+      setStep(1,"done","润色完成 ✓");
+      setStep(2,"done","英文 → 中文 ✓");
+      setStep(3,"done","中文 → 日文 ✓");
+      setStep(4,"done","日文 → 英文 ✓");
+    }
+
+    var data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || "API错误");
+
+    resultData = data;
+    document.getElementById("result-text").textContent = data.result;
+    document.getElementById("output-area").style.display = "block";
+
+    if (data.steps) {
+      document.getElementById("btn-zh").style.display = "inline-flex";
+      document.getElementById("btn-ja").style.display = "inline-flex";
+    }
+  } catch(e) {
+    setStep(1,"wait","错误: " + e.message);
+  }
+
+  btn.disabled = false;
+  btn.textContent = "重新处理 →";
+}
+
+function showStep(lang) {
+  if (!resultData || !resultData.steps) return;
+  var t = resultData.steps[lang] || "";
+  document.getElementById("result-text").textContent = t;
+  currentView = lang;
+}
+
+function copyResult() {
+  var t = document.getElementById("result-text").textContent;
+  navigator.clipboard.writeText(t).then(function(){ alert("已复制到剪贴板！"); });
+}
+</script>
+</body>
+</html>
