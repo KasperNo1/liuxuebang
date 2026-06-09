@@ -103,7 +103,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
     <span class="mode-badge mode-cap" id="mbadge">📺 字幕模式</span>
     <select class="nav-sel" id="nsubj"><option value="econ">商科/经济</option><option value="law">法律</option><option value="cs">CS/工程</option><option value="bio">生物医学</option><option value="math">数学统计</option><option value="general">通用</option></select>
     <button class="nav-btn" id="sw-btn">切换模式</button>
-    <button class="nav-btn" id="float-btn" style="background:#7c3aed;color:#fff;border-color:#7c3aed">🪟 悬浮字幕</button>
+    <button class="nav-btn" id="pip-btn" style="background:#7c3aed;color:#fff;border-color:#7c3aed">📺 屏幕字幕</button>
 <button class="nav-btn btn-start" id="go-btn">▶ 开始</button>
     <a class="nav-btn" href="/">返回主页</a>
   </div>
@@ -160,115 +160,19 @@ document.getElementById('clr').onclick=function(){document.getElementById('feed'
 document.getElementById('rfold').onclick=function(){document.getElementById('rp').classList.add('collapsed');document.getElementById('tab').style.display='block';};
 document.getElementById('tab').onclick=function(){document.getElementById('rp').classList.remove('collapsed');document.getElementById('tab').style.display='none';};
 
-
-var _fw=document.getElementById('fw');
-var _fwOn=false,_fwPos='bottom';
-
-function _showFw(){
-  _fw.style.display='block';
-  if(_fwPos==='bottom'){_fw.style.bottom='20px';_fw.style.left='50%';_fw.style.transform='translateX(-50%)';_fw.style.top='auto';}
-  else if(_fwPos==='top'){_fw.style.top='20px';_fw.style.left='50%';_fw.style.transform='translateX(-50%)';_fw.style.bottom='auto';}
-}
-
-var _fbtn=document.getElementById('float-btn');
-_fbtn.addEventListener('click',function(){
-  _fwOn=!_fwOn;
-  if(_fwOn){_showFw();this.textContent='🪟 关闭悬浮';}
-  else{_fw.style.display='none';this.textContent='🪟 悬浮字幕';}
-});
-
-document.getElementById('fw-cls').addEventListener('click',function(){
-  _fwOn=false;_fw.style.display='none';
-  _fbtn.textContent='🪟 悬浮字幕';
-});
-
-document.getElementById('fw-sty').addEventListener('click',function(){
-  var sp=document.getElementById('fw-sp');
-  sp.style.display=(sp.style.display==='flex')?'none':'flex';
-});
-
-var _drag=false,_dx=0,_dy=0;
-document.getElementById('fw-bar').addEventListener('mousedown',function(e){
-  if(e.target.tagName==='BUTTON')return;
-  _drag=true;var r=_fw.getBoundingClientRect();_dx=e.clientX-r.left;_dy=e.clientY-r.top;_fwPos='free';e.preventDefault();
-});
-document.addEventListener('mousemove',function(e){
-  if(!_drag)return;
-  _fw.style.left=Math.max(0,Math.min(e.clientX-_dx,innerWidth-_fw.offsetWidth))+'px';
-  _fw.style.top=Math.max(0,Math.min(e.clientY-_dy,innerHeight-_fw.offsetHeight))+'px';
-  _fw.style.bottom='auto';_fw.style.transform='none';
-});
-document.addEventListener('mouseup',function(){_drag=false;});
-
-document.getElementById('sz-r').oninput=function(){
-  document.getElementById('sz-v').textContent=this.value;
-  document.getElementById('fw-zh').style.fontSize=this.value+'px';
-};
-document.getElementById('bg-r').oninput=function(){
-  document.getElementById('bg-v').textContent=this.value+'%';
-  _fw.querySelector('div').style.background='rgba(0,0,0,'+this.value/100+')';
-};
-document.querySelectorAll('.fw-col').forEach(function(d){
-  d.addEventListener('click',function(){
-    document.querySelectorAll('.fw-col').forEach(function(x){x.style.borderColor='transparent';});
-    this.style.borderColor='#fff';
-    document.getElementById('fw-zh').style.color=this.dataset.c;
-  });
-});
-document.querySelectorAll('.fw-pb').forEach(function(b){
-  b.addEventListener('click',function(){
-    document.querySelectorAll('.fw-pb').forEach(function(x){x.style.borderColor='rgba(255,255,255,0.15)';x.style.background='rgba(255,255,255,0.05)';x.style.color='rgba(255,255,255,0.4)';});
-    this.style.borderColor='#7c3aed';this.style.background='rgba(124,58,237,0.4)';this.style.color='#fff';
-    _fwPos=this.dataset.p;if(_fwPos!=='free')_showFw();
-  });
-});
-
-var _origShow=show;
-show=function(en,zh){
-  _origShow(en,zh);
-  if(_fwOn){document.getElementById('fw-en').textContent=en;document.getElementById('fw-zh').textContent=zh;}
-};
-
-document.getElementById('dl-btn').addEventListener('click',function(){
-  if(!txLog||!txLog.length){alert('还没有翻译记录');return;}
-  var lines=['翻译记录','导出：'+new Date().toLocaleString('zh-CN'),'='.repeat(40),''];
-  txLog.forEach(function(r){lines.push('['+r.ts+'] '+r.en);lines.push('→ '+r.zh);lines.push('');});
-  var blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'});
-  var a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='translate_'+new Date().toISOString().slice(0,10)+'.txt';
-  a.click();
-});
-
+var _pc=document.getElementById('pip-canvas');
+var _px=_pc.getContext('2d');
+var _pv=document.getElementById('pip-video');
+var _pon=false,_pen='',_pzh='请开始翻译...',_praf=null;
+function _draw(){var w=800,h=200;_px.fillStyle='#0a0c18';_px.fillRect(0,0,w,h);_px.fillStyle='#3a72e0';_px.fillRect(0,0,w,3);_px.font='20px Arial';_px.fillStyle='rgba(255,255,255,0.4)';_px.textAlign='center';_px.fillText(_pen.slice(0,90),400,48);_px.font='bold 54px Arial';_px.fillStyle='#7ec8ff';_px.fillText(_pzh.slice(0,20),400,130);_px.font='13px Arial';_px.fillStyle='rgba(255,255,255,0.15)';_px.fillText('留学帮 · EchoTranslate',400,185);}
+function _loop(){_draw();_praf=requestAnimationFrame(_loop);}
+async function _open(){try{_loop();var s=_pc.captureStream(10);_pv.srcObject=s;await _pv.play();await _pv.requestPictureInPicture();_pon=true;document.getElementById('pip-btn').textContent='❌ 关闭字幕';}catch(e){cancelAnimationFrame(_praf);alert('开启失败: '+e.message+'\n请用Chrome且开通画中画功能');}}
+function _close(){if(document.pictureInPictureElement)document.exitPictureInPicture();cancelAnimationFrame(_praf);_pon=false;document.getElementById('pip-btn').textContent='📺 屏幕字幕';}
+document.getElementById('pip-btn').addEventListener('click',function(){_pon?_close():_open();});
+document.addEventListener('leavepictureinpicture',function(){cancelAnimationFrame(_praf);_pon=false;document.getElementById('pip-btn').textContent='📺 屏幕字幕';});
+var _os=show;show=function(en,zh){_os(en,zh);_pen=en;_pzh=zh;};
+document.getElementById('dl-btn').addEventListener('click',function(){if(!txLog||!txLog.length){alert('还没有翻译记录');return;}var lines=['翻译记录','导出：'+new Date().toLocaleString('zh-CN'),'='.repeat(40),''];txLog.forEach(function(r){lines.push('['+r.ts+'] '+r.en);lines.push('→ '+r.zh);lines.push('');});var b=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='translate_'+new Date().toISOString().slice(0,10)+'.txt';a.click();});
 </script>
-
-<div id="fw" style="position:fixed;z-index:9999;display:none;user-select:none;min-width:280px;max-width:85vw;">
-<div style="background:rgba(0,0,0,0.85);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px 16px 10px;backdrop-filter:blur(10px);">
-<div id="fw-bar" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.07);cursor:grab;">
-<span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:.12em;text-transform:uppercase;">⧐ 悬浮字幕</span>
-<div style="display:flex;gap:5px;">
-<button id="fw-sty" style="background:rgba(255,255,255,0.08);border:none;border-radius:4px;color:rgba(255,255,255,0.5);font-size:10px;padding:2px 7px;cursor:pointer;">⚙ 样式</button>
-<button id="fw-cls" style="background:rgba(255,255,255,0.08);border:none;border-radius:4px;color:rgba(255,255,255,0.5);font-size:10px;padding:2px 7px;cursor:pointer;">✕</button>
-</div></div>
-<div id="fw-en" style="font-size:13px;color:rgba(255,255,255,0.4);font-family:Helvetica Neue,Arial,sans-serif;line-height:1.4;margin-bottom:6px;">等待翻译...</div>
-<div id="fw-zh" style="font-size:28px;color:#7ec8ff;font-weight:500;line-height:1.5;">—</div>
-<div id="fw-sp" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.07);flex-direction:column;gap:8px;">
-<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:10px;color:rgba(255,255,255,0.35);width:36px;">字号</span><input type="range" id="sz-r" min="16" max="60" value="28" style="flex:1;accent-color:#7c3aed;"><span id="sz-v" style="font-size:10px;color:rgba(255,255,255,0.4);width:24px;">28</span></div>
-<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:10px;color:rgba(255,255,255,0.35);width:36px;">颜色</span>
-<div style="display:flex;gap:5px;">
-<div class="fw-col on" data-c="#7ec8ff" style="width:15px;height:15px;border-radius:50%;background:#7ec8ff;cursor:pointer;border:2px solid #fff;"></div>
-<div class="fw-col" data-c="#ffffff" style="width:15px;height:15px;border-radius:50%;background:#fff;cursor:pointer;border:2px solid transparent;"></div>
-<div class="fw-col" data-c="#fde68a" style="width:15px;height:15px;border-radius:50%;background:#fde68a;cursor:pointer;border:2px solid transparent;"></div>
-<div class="fw-col" data-c="#86efac" style="width:15px;height:15px;border-radius:50%;background:#86efac;cursor:pointer;border:2px solid transparent;"></div>
-<div class="fw-col" data-c="#f9a8d4" style="width:15px;height:15px;border-radius:50%;background:#f9a8d4;cursor:pointer;border:2px solid transparent;"></div>
-</div></div>
-<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:10px;color:rgba(255,255,255,0.35);width:36px;">透明</span><input type="range" id="bg-r" min="30" max="100" value="85" style="flex:1;accent-color:#7c3aed;"><span id="bg-v" style="font-size:10px;color:rgba(255,255,255,0.4);width:28px;">85%</span></div>
-<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:10px;color:rgba(255,255,255,0.35);width:36px;">位置</span>
-<div style="display:flex;gap:4px;">
-<button class="fw-pb on" data-p="bottom" style="font-size:10px;padding:2px 7px;border-radius:4px;border:1px solid #7c3aed;background:rgba(124,58,237,0.4);color:#fff;cursor:pointer;">底部</button>
-<button class="fw-pb" data-p="top" style="font-size:10px;padding:2px 7px;border-radius:4px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.4);cursor:pointer;">顶部</button>
-<button class="fw-pb" data-p="free" style="font-size:10px;padding:2px 7px;border-radius:4px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.4);cursor:pointer;">自由</button>
-</div></div>
-</div></div></div>
+<canvas id="pip-canvas" width="800" height="200" style="display:none;"></canvas><video id="pip-video" style="display:none;" muted></video>
 </body>
 </html>
