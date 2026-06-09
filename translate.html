@@ -164,14 +164,59 @@ var _pc=document.getElementById('pip-canvas');
 var _px=_pc.getContext('2d');
 var _pv=document.getElementById('pip-video');
 var _pon=false,_pen='',_pzh='请开始翻译...',_praf=null;
-function _draw(){var w=800,h=200;_px.fillStyle='#0a0c18';_px.fillRect(0,0,w,h);_px.fillStyle='#3a72e0';_px.fillRect(0,0,w,3);_px.font='20px Arial';_px.fillStyle='rgba(255,255,255,0.4)';_px.textAlign='center';_px.fillText(_pen.slice(0,90),400,48);_px.font='bold 54px Arial';_px.fillStyle='#7ec8ff';_px.fillText(_pzh.slice(0,20),400,130);_px.font='13px Arial';_px.fillStyle='rgba(255,255,255,0.15)';_px.fillText('留学帮 · EchoTranslate',400,185);}
+
+function _draw(){
+  var w=800,h=200;
+  _px.fillStyle='#0a0c18';_px.fillRect(0,0,w,h);
+  _px.fillStyle='#3a72e0';_px.fillRect(0,0,w,3);
+  _px.font='20px Arial';_px.fillStyle='rgba(255,255,255,0.4)';
+  _px.textAlign='center';_px.fillText(_pen.slice(0,90),400,48);
+  _px.font='bold 54px Arial';_px.fillStyle='#7ec8ff';
+  _px.fillText(_pzh.slice(0,20),400,130);
+  _px.font='13px Arial';_px.fillStyle='rgba(255,255,255,0.18)';
+  _px.fillText('留学帮 · EchoTranslate',400,185);
+}
 function _loop(){_draw();_praf=requestAnimationFrame(_loop);}
-async function _open(){try{_loop();var s=_pc.captureStream(10);_pv.srcObject=s;await _pv.play();await _pv.requestPictureInPicture();_pon=true;document.getElementById('pip-btn').textContent='❌ 关闭字幕';}catch(e){cancelAnimationFrame(_praf);alert('开启失败: '+e.message+'\n请用Chrome且开通画中画功能');}}
-function _close(){if(document.pictureInPictureElement)document.exitPictureInPicture();cancelAnimationFrame(_praf);_pon=false;document.getElementById('pip-btn').textContent='📺 屏幕字幕';}
-document.getElementById('pip-btn').addEventListener('click',function(){_pon?_close():_open();});
-document.addEventListener('leavepictureinpicture',function(){cancelAnimationFrame(_praf);_pon=false;document.getElementById('pip-btn').textContent='📺 屏幕字幕';});
-var _os=show;show=function(en,zh){_os(en,zh);_pen=en;_pzh=zh;};
-document.getElementById('dl-btn').addEventListener('click',function(){if(!txLog||!txLog.length){alert('还没有翻译记录');return;}var lines=['翻译记录','导出：'+new Date().toLocaleString('zh-CN'),'='.repeat(40),''];txLog.forEach(function(r){lines.push('['+r.ts+'] '+r.en);lines.push('→ '+r.zh);lines.push('');});var b=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='translate_'+new Date().toISOString().slice(0,10)+'.txt';a.click();});
+
+document.getElementById('pip-btn').addEventListener('click',async function(){
+  if(_pon){
+    if(document.pictureInPictureElement)document.exitPictureInPicture();
+    cancelAnimationFrame(_praf);_pon=false;
+    this.textContent='📺 屏幕字幕';
+    return;
+  }
+  try{
+    _loop();
+    var stream=_pc.captureStream(10);
+    _pv.srcObject=stream;
+    await _pv.play();
+    await _pv.requestPictureInPicture();
+    _pon=true;
+    this.textContent='❌ 关闭字幕';
+  }catch(e){
+    cancelAnimationFrame(_praf);
+    alert('开启失败: '+e.message+'\n\n确认使用Chrome且已开启画中画功能');
+  }
+});
+
+document.addEventListener('leavepictureinpicture',function(){
+  cancelAnimationFrame(_praf);_pon=false;
+  document.getElementById('pip-btn').textContent='📺 屏幕字幕';
+});
+
+var _os=show;
+show=function(en,zh){_os(en,zh);_pen=en;_pzh=zh;};
+
+document.getElementById('dl-btn').addEventListener('click',function(){
+  if(!txLog||!txLog.length){alert('还没有翻译记录');return;}
+  var lines=['翻译记录','导出：'+new Date().toLocaleString('zh-CN'),'='.repeat(40),''];
+  txLog.forEach(function(r){lines.push('['+r.ts+'] '+r.en);lines.push('→ '+r.zh);lines.push('');});
+  var b=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(b);
+  a.download='translate_'+new Date().toISOString().slice(0,10)+'.txt';
+  a.click();
+});
 </script>
 <canvas id="pip-canvas" width="800" height="200" style="display:none;"></canvas><video id="pip-video" style="display:none;" muted></video>
 </body>
