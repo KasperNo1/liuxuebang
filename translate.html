@@ -160,23 +160,86 @@ document.getElementById('clr').onclick=function(){document.getElementById('feed'
 document.getElementById('rfold').onclick=function(){document.getElementById('rp').classList.add('collapsed');document.getElementById('tab').style.display='block';};
 document.getElementById('tab').onclick=function(){document.getElementById('rp').classList.remove('collapsed');document.getElementById('tab').style.display='none';};
 
-var fw=document.getElementById('fw');
-var fwVis=false,fwPos='bottom';
-function applyFwPos(){fw.style.transform='none';if(fwPos==='bottom'){fw.style.bottom='20px';fw.style.left='50%';fw.style.transform='translateX(-50%)';fw.style.top='auto';}else if(fwPos==='top'){fw.style.top='20px';fw.style.left='50%';fw.style.transform='translateX(-50%)';fw.style.bottom='auto';}}
-document.getElementById('float-btn').onclick=function(){fwVis=!fwVis;if(fwVis){fw.style.display='block';applyFwPos();this.textContent='🪟 关闭悬浮';}else{fw.style.display='none';this.textContent='🪟 悬浮字幕';}};
-document.getElementById('fw-cls').onclick=function(){fwVis=false;fw.style.display='none';document.getElementById('float-btn').textContent='🪟 悬浮字幕';};
-document.getElementById('fw-sty').onclick=function(){var sp=document.getElementById('fw-sp');sp.style.display=sp.style.display==='flex'?'none':'flex';};
-var drag=false,dx=0,dy=0;
-document.getElementById('fw-bar').addEventListener('mousedown',function(e){if(e.target.tagName==='BUTTON')return;drag=true;var r=fw.getBoundingClientRect();dx=e.clientX-r.left;dy=e.clientY-r.top;fwPos='free';e.preventDefault();});
-document.addEventListener('mousemove',function(e){if(!drag)return;fw.style.left=Math.max(0,Math.min(e.clientX-dx,innerWidth-fw.offsetWidth))+'px';fw.style.top=Math.max(0,Math.min(e.clientY-dy,innerHeight-fw.offsetHeight))+'px';fw.style.bottom='auto';fw.style.transform='none';});
-document.addEventListener('mouseup',function(){drag=false;});
-document.getElementById('sz-r').oninput=function(){document.getElementById('sz-v').textContent=this.value;document.getElementById('fw-zh').style.fontSize=this.value+'px';};
-document.getElementById('bg-r').oninput=function(){document.getElementById('bg-v').textContent=this.value+'%';fw.querySelector('div').style.background='rgba(0,0,0,'+this.value/100+')';};
-document.querySelectorAll('.fw-col').forEach(function(d){d.onclick=function(){document.querySelectorAll('.fw-col').forEach(function(x){x.style.borderColor='transparent';});this.style.borderColor='#fff';document.getElementById('fw-zh').style.color=this.dataset.c;};});
-document.querySelectorAll('.fw-pb').forEach(function(b){b.onclick=function(){document.querySelectorAll('.fw-pb').forEach(function(x){x.style.borderColor='rgba(255,255,255,0.15)';x.style.background='rgba(255,255,255,0.05)';x.style.color='rgba(255,255,255,0.4)';});this.style.borderColor='#7c3aed';this.style.background='rgba(124,58,237,0.4)';this.style.color='#fff';fwPos=this.dataset.p;if(fwPos!=='free')applyFwPos();};});
-document.getElementById('dl-btn').onclick=function(){if(!txLog||!txLog.length){alert('还没有翻译记录');return;}var lines=['翻译记录','导出：'+new Date().toLocaleString('zh-CN'),'='.repeat(40),''];txLog.forEach(function(r){lines.push('['+r.ts+'] '+r.en);lines.push('→ '+r.zh);lines.push('');});var b=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='translate_'+new Date().toISOString().slice(0,10)+'.txt';a.click();};
-var _origShow=window.show;
-window.show=function(en,zh){if(_origShow)_origShow(en,zh);if(fwVis){document.getElementById('fw-en').textContent=en;document.getElementById('fw-zh').textContent=zh;}};
+
+var _fw=document.getElementById('fw');
+var _fwOn=false,_fwPos='bottom';
+
+function _showFw(){
+  _fw.style.display='block';
+  if(_fwPos==='bottom'){_fw.style.bottom='20px';_fw.style.left='50%';_fw.style.transform='translateX(-50%)';_fw.style.top='auto';}
+  else if(_fwPos==='top'){_fw.style.top='20px';_fw.style.left='50%';_fw.style.transform='translateX(-50%)';_fw.style.bottom='auto';}
+}
+
+var _fbtn=document.getElementById('float-btn');
+_fbtn.addEventListener('click',function(){
+  _fwOn=!_fwOn;
+  if(_fwOn){_showFw();this.textContent='🪟 关闭悬浮';}
+  else{_fw.style.display='none';this.textContent='🪟 悬浮字幕';}
+});
+
+document.getElementById('fw-cls').addEventListener('click',function(){
+  _fwOn=false;_fw.style.display='none';
+  _fbtn.textContent='🪟 悬浮字幕';
+});
+
+document.getElementById('fw-sty').addEventListener('click',function(){
+  var sp=document.getElementById('fw-sp');
+  sp.style.display=(sp.style.display==='flex')?'none':'flex';
+});
+
+var _drag=false,_dx=0,_dy=0;
+document.getElementById('fw-bar').addEventListener('mousedown',function(e){
+  if(e.target.tagName==='BUTTON')return;
+  _drag=true;var r=_fw.getBoundingClientRect();_dx=e.clientX-r.left;_dy=e.clientY-r.top;_fwPos='free';e.preventDefault();
+});
+document.addEventListener('mousemove',function(e){
+  if(!_drag)return;
+  _fw.style.left=Math.max(0,Math.min(e.clientX-_dx,innerWidth-_fw.offsetWidth))+'px';
+  _fw.style.top=Math.max(0,Math.min(e.clientY-_dy,innerHeight-_fw.offsetHeight))+'px';
+  _fw.style.bottom='auto';_fw.style.transform='none';
+});
+document.addEventListener('mouseup',function(){_drag=false;});
+
+document.getElementById('sz-r').oninput=function(){
+  document.getElementById('sz-v').textContent=this.value;
+  document.getElementById('fw-zh').style.fontSize=this.value+'px';
+};
+document.getElementById('bg-r').oninput=function(){
+  document.getElementById('bg-v').textContent=this.value+'%';
+  _fw.querySelector('div').style.background='rgba(0,0,0,'+this.value/100+')';
+};
+document.querySelectorAll('.fw-col').forEach(function(d){
+  d.addEventListener('click',function(){
+    document.querySelectorAll('.fw-col').forEach(function(x){x.style.borderColor='transparent';});
+    this.style.borderColor='#fff';
+    document.getElementById('fw-zh').style.color=this.dataset.c;
+  });
+});
+document.querySelectorAll('.fw-pb').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('.fw-pb').forEach(function(x){x.style.borderColor='rgba(255,255,255,0.15)';x.style.background='rgba(255,255,255,0.05)';x.style.color='rgba(255,255,255,0.4)';});
+    this.style.borderColor='#7c3aed';this.style.background='rgba(124,58,237,0.4)';this.style.color='#fff';
+    _fwPos=this.dataset.p;if(_fwPos!=='free')_showFw();
+  });
+});
+
+var _origShow=show;
+show=function(en,zh){
+  _origShow(en,zh);
+  if(_fwOn){document.getElementById('fw-en').textContent=en;document.getElementById('fw-zh').textContent=zh;}
+};
+
+document.getElementById('dl-btn').addEventListener('click',function(){
+  if(!txLog||!txLog.length){alert('还没有翻译记录');return;}
+  var lines=['翻译记录','导出：'+new Date().toLocaleString('zh-CN'),'='.repeat(40),''];
+  txLog.forEach(function(r){lines.push('['+r.ts+'] '+r.en);lines.push('→ '+r.zh);lines.push('');});
+  var blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='translate_'+new Date().toISOString().slice(0,10)+'.txt';
+  a.click();
+});
+
 </script>
 
 <div id="fw" style="position:fixed;z-index:9999;display:none;user-select:none;min-width:280px;max-width:85vw;">
